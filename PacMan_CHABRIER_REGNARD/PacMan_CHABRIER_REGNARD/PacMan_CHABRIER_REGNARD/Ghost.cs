@@ -7,6 +7,6 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class Ghost : Character
     {
-        Vector
+     
     }
 }
