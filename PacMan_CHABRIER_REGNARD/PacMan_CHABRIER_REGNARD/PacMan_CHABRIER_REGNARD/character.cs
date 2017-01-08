@@ -25,6 +25,7 @@ namespace PacMan_CHABRIER_REGNARD
 
                 case State.Up:
 
+
                     break;
 
                 case State.Down:

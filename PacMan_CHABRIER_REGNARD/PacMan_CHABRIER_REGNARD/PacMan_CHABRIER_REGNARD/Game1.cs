@@ -136,7 +136,7 @@ namespace PacMan_CHABRIER_REGNARD
         protected override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             for (int x = 0; x < VX; x++)
             {
                 for (int y = 0; y < VY; y++)
