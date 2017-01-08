@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void movement(Position position, State state, Map map)
         {
-            Position postemp = new Position(position);
+            Position postemp = new Position(position.getPosX(),position.getPosY());
 
             switch (state)
             {   
