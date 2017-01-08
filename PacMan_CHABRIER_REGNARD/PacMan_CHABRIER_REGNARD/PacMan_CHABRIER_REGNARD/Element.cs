@@ -7,6 +7,7 @@ namespace PacMan_CHABRIER_REGNARD
 {
     public enum Element
     {
+
         Wall, Beans, BigBeans, Nothing
     }
 }

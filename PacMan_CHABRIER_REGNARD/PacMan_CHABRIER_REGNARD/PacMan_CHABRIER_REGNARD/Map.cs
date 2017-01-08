@@ -5,11 +5,14 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
+
+    
     class Map
     {
         private byte[,] grid;
-        private const int VX = 31;
+        private const int VX = 31; 
         private const int VY = 28;
+
 
         public Map()
         {
