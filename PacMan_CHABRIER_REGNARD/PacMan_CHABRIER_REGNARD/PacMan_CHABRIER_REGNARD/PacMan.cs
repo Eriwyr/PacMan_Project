@@ -7,5 +7,6 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class PacMan : Character
     {
+        private int life;
     }
 }
