@@ -49,10 +49,10 @@ namespace PacMan_CHABRIER_REGNARD
             };
         }
 
-        public int checkElement(Position pos)
+        public Element checkElement(Position pos)
         {
 
-            return 1;
+            return (Element) grid[pos.getPosX(), pos.getPosY()];
         }
 
     }
