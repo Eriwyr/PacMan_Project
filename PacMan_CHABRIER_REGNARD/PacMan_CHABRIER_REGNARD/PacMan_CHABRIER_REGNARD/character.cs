@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void movement(Position position, State state, Map map)
         {
-            Position postemp = new Position(position.getPosX(),position.getPosY());
+            Position posTemp = new Position(position.getPosX(),position.getPosY());
 
             switch (state)
             {   
@@ -23,18 +23,38 @@ namespace PacMan_CHABRIER_REGNARD
                     break;
 
                 case State.Up:
+                    posTemp.setPosX(posTemp.getPosX() - 1);
 
+                    if (map.checkElement(posTemp) != 0)
+                    {
+                        position = posTemp;
+                    }
                     break;
 
                 case State.Down:
+                    posTemp.setPosX(posTemp.getPosX() + 1);
+                    if (map.checkElement(posTemp) != 0)
+                    {
+                        position = posTemp;
+                    }
 
                     break;
 
                 case State.Left:
+                    posTemp.setPosY(posTemp.getPosY() - 1);
+                    if (map.checkElement(posTemp) != 0)
+                    {
+                        position = posTemp;
+                    }
 
                     break;
 
                 case State.Right:
+                    posTemp.setPosY(posTemp.getPosY() + 1);
+                    if (map.checkElement(posTemp) != 0)
+                    {
+                        position = posTemp;
+                    }
 
                     break;
             }
