@@ -5,8 +5,9 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
-    class Ghost : Character
+    class Position
     {
-        Vector
+        private int x;
+        private int y;
     }
 }
