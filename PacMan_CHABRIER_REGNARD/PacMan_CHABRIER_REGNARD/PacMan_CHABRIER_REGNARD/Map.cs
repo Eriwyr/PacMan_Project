@@ -58,5 +58,10 @@ namespace PacMan_CHABRIER_REGNARD
             return (Element) grid[pos.getPosX(), pos.getPosY()];
         }
 
+        public void setElement(Position position, Element element)
+        {
+            grid[position.getPosX(), position.getPosY()] = (byte)element;
+        }
+
     }
 }

@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="AnimatedObject.cs" />
     <Compile Include="character.cs" />
+    <Compile Include="Element.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Ghost.cs" />
     <Compile Include="Map.cs" />
