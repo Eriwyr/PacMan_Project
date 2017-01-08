@@ -14,17 +14,15 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void movement(Position position, State state, Map map)
         {
-            Position postemp = new Position();
+            Position postemp = new Position(position);
 
             switch (state)
             {   
                 case State.Wait:
-                    postemp = this.position;
 
                     break;
 
                 case State.Up:
-
 
                     break;
 
