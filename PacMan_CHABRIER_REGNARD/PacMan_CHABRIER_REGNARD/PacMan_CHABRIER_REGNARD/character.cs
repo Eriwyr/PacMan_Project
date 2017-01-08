@@ -19,8 +19,8 @@ namespace PacMan_CHABRIER_REGNARD
             switch (state)
             {   
                 case State.Wait:
+                    postemp = this.position;
 
-                    if(Map.checkWall()
                     break;
 
                 case State.Up:
