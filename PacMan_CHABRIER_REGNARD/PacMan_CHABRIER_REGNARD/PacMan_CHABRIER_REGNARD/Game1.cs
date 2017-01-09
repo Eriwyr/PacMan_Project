@@ -22,6 +22,8 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject bean;
         AnimatedObject pacMan;
         int timer;
+        int change;
+        State stateDisplay;
         Game game;
 
         private const int VX = 31;
@@ -33,6 +35,8 @@ namespace PacMan_CHABRIER_REGNARD
             Content.RootDirectory = "Content";
             game = new Game();
             timer = 0;
+            change = 0;
+            stateDisplay = State.Nothing;
         }
 
         /// <summary>
@@ -99,15 +103,81 @@ namespace PacMan_CHABRIER_REGNARD
              pos.Y += 2;
              pacMan.setPosition(pos);*/
             
-            if(timer == 3)
+            
+            if(timer == 5)
             {
                 timer = 0;
                 State state = getInput();
+               
+                if(state != State.Nothing) // To keep in memory the last state 
+                    stateDisplay = state;
+
+                if (stateDisplay == State.Right)
+                {
+                    if (change % 2 == 0)
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanright"));
+                    }
+                    else
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanright1"));
+                    }
+
+                   
+                }
+
+                if (stateDisplay == State.Left)
+                {
+                    if (change % 2 == 0)
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanleft"));
+                    }
+                    else
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanleft1"));
+                    }
+
+
+                }
+
+                if (stateDisplay == State.Up)
+                {
+                    if (change % 2 == 0)
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanup"));
+                    }
+                    else
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmanup1"));
+                    }
+
+
+                }
+
+                if (stateDisplay == State.Down)
+                {
+                    if (change % 2 == 0)
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmandown"));
+                    }
+                    else
+                    {
+                        pacMan.setTexture(Content.Load<Texture2D>("pacmandown1"));
+                    }
+
+
+                }
+
+
+
                 game.update(state);
-
                 updateViews();
-
                 base.Update(gameTime);
+
+                if (change == 10) //iterator to switch between two texture => make animation
+                    change = 0;
+                change++;
+                
             }
             timer++;
         }
