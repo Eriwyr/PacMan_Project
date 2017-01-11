@@ -8,27 +8,57 @@ namespace PacMan_CHABRIER_REGNARD
     class Ghost : Character
     {
 
-        private Position target;
+        protected Position target;
         private State nextMove;
+        private bool[] intersect;
 
         public Ghost()
         {
             target = new Position(0, 0);
             nextMove = State.Nothing;
+            intersect = new bool[4];
+            for (int i = 0; i < 4; i++)
+                intersect[i] = false;
         }
 
-        public State computeNextMove(PacMan pac, Map map)
+        public void computeNextMove(PacMan pac, Map map)
         {
             computeTargetTile(pac);
             Position next = nextTile();
+            if(checkIntersection(next, map))
+            {
+               this.state =  selectIntersect();
+            } 
 
 
-
-            return State.Nothing;
         }
 
 
-        public void computeTargetTile(PacMan pac)
+        private State selectIntersect()
+        {
+            State inverse = (State)((int)this.state + 2 % 4);
+            intersect[(int)inverse] = false;
+            int distance = 100000;
+            int j = 0;
+            for(int i = 0; i < 4; i++)
+            {
+                if (intersect[i])
+                {
+
+                    if (manhattanDistance(target) < distance)
+                        j = i;
+                }
+            }
+
+            return (State) j; 
+        }
+
+        private int manhattanDistance(Position taget)
+        {
+            return (Math.Abs(this.position.getPosX() - target.getPosX()) + Math.Abs(this.position.getPosY() - target.getPosY()));
+        }
+
+        protected virtual void  computeTargetTile(PacMan pac)
         {
             //To override
         }
@@ -44,7 +74,11 @@ namespace PacMan_CHABRIER_REGNARD
 
             Element elmt = map.checkElement(up);
             if (elmt != Element.Wall)
+            {
                 i++;
+                intersect[0] = true;
+            }
+                
             elmt = map.checkElement(down);
             if (elmt != Element.Wall)
                 i++;
