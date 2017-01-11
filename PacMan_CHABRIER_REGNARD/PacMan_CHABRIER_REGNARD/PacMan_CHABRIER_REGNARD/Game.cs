@@ -16,12 +16,14 @@ namespace PacMan_CHABRIER_REGNARD
         {
             map = new Map();
             pacMan = new PacMan();
-            ghost = new Ghost();
+            ghost = new RedGhost();
         }
 
         public void update(State state)
         {
+            ghost.computeNextMove(pacMan, map);
             pacMan.movement(state,map);
+            ghost.movement(ghost.getNextMove(), map);
 
 
         }
@@ -34,6 +36,11 @@ namespace PacMan_CHABRIER_REGNARD
         public PacMan getPacman()
         {
             return pacMan;
+        }
+
+        public Ghost getGhost()
+        {
+            return ghost;
         }
     }
 }

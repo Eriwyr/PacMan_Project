@@ -99,5 +99,6 @@ namespace PacMan_CHABRIER_REGNARD
         {
             return position;
         }
+
     }
 }

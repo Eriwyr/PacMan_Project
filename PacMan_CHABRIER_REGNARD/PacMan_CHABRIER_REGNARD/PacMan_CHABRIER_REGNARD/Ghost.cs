@@ -33,6 +33,11 @@ namespace PacMan_CHABRIER_REGNARD
 
         }
 
+        public State getNextMove()
+        {
+            return nextMove;
+        }
+
 
         private State selectIntersect()
         {
@@ -63,7 +68,7 @@ namespace PacMan_CHABRIER_REGNARD
             //To override
         }
 
-        public bool checkIntersection(Position pos, Map map)
+        private bool checkIntersection(Position pos, Map map)
         {
             Position up, down, left, right;
             int i = 0;
@@ -95,7 +100,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         }
 
-        public Position nextTile()
+        private Position nextTile()
         {
             switch (this.state)
             {
