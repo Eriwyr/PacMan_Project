@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
-    public enum State {Wait,Up,Down,Left,Right,Nothing};
+    public enum State {Up,Left,Down,Right,Nothing, Wait};
 
     class Character
     {
