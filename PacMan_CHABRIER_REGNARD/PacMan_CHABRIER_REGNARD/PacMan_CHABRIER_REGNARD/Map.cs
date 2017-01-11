@@ -54,8 +54,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Element checkElement(Position pos)
         {
-
-            return (Element) grid[pos.getPosX(), pos.getPosY()];
+                return (Element)grid[pos.getPosX(), pos.getPosY()];   
         }
 
         public void setElement(Position position, Element element)

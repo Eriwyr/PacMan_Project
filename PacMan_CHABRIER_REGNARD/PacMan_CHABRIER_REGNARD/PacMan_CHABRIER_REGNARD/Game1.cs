@@ -21,7 +21,7 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject wall;
         AnimatedObject bean;
         AnimatedObject pacMan;
-        AnimatedObject ghost;
+        //AnimatedObject ghost;
         int timer;
         int change;
         State stateDisplay;
@@ -71,7 +71,7 @@ namespace PacMan_CHABRIER_REGNARD
             wall = new AnimatedObject(textureWall, new Vector2(0f, 0f), new Vector2(20f, 20f));
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
-            ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            //ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
 
             // TODO: use this.Content to load your game content here
         }
@@ -98,12 +98,7 @@ namespace PacMan_CHABRIER_REGNARD
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
-
-            /* Vector2 pos = pacMan.getPosition();
-             pos.X += 2;
-             pos.Y += 2;
-             pacMan.setPosition(pos);*/
+            // TODO: Add your update logic hereS
             
             
             if(timer == 5)
