@@ -19,15 +19,25 @@ namespace PacMan_CHABRIER_REGNARD
             ghost = new RedGhost();
         }
 
-        public void update(State state)
+        public void pacmanMovement(State state)
+        {
+            pacMan.movement(state, map);
+        }
+
+        public void computeGhosts()
         {
             ghost.computeNextMove(pacMan, map);
-            pacMan.movement(state, map);
-            
-            
+        }
+
+        public void ghostMovement()
+        {
             ghost.movement(ghost.getNextMove(), map);
+        }
 
 
+        public bool checkPacman(State state)
+        {
+            return pacMan.checkMovement(state, map);
         }
 
         public Map getMap()

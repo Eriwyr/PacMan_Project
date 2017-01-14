@@ -22,6 +22,8 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject bean;
         AnimatedObject pacMan;
         AnimatedObject ghost;
+        BufferInput buffer;
+        KeyboardState oldState;
         int timer;
         int change;
         State stateDisplay;
@@ -38,6 +40,7 @@ namespace PacMan_CHABRIER_REGNARD
             timer = 0;
             change = 0;
             stateDisplay = State.Nothing;
+            buffer = new BufferInput();
         }
 
         /// <summary>
@@ -99,12 +102,20 @@ namespace PacMan_CHABRIER_REGNARD
                 this.Exit();
 
             // TODO: Add your update logic hereS
-            
-            
-            if(timer == 5)
+            State state = getInput();
+
+            if(state == State.Quit)
+            {
+                this.Exit();
+            }
+
+            if(state != State.Nothing)
+                buffer.push(state);
+
+            if (timer == 6)
             {
                 timer = 0;
-                State state = getInput();
+                
 
                 State currentState = game.getPacman().getState();
                 if(currentState != State.Nothing) // To keep in memory the last state 
@@ -166,9 +177,25 @@ namespace PacMan_CHABRIER_REGNARD
 
                 }
 
+                game.computeGhosts();
+                if(buffer.getCount() > 0)
+                {
+                    if (game.checkPacman(buffer.getHead()))
+                    {
+                        game.pacmanMovement(buffer.pop());
+                        buffer.clear();
+
+                    } else
+                    {
+                        game.pacmanMovement(State.Nothing);
+                    }
+                } else
+                {
+                    game.pacmanMovement(State.Nothing);
+                }
                 
 
-                game.update(state);
+                game.ghostMovement();
                 updateViews();
                 base.Update(gameTime);
                 
@@ -242,26 +269,31 @@ namespace PacMan_CHABRIER_REGNARD
         {
             KeyboardState keyboard = Keyboard.GetState();
 
-            if (keyboard.IsKeyDown(Keys.Right))
+            if (keyboard.IsKeyDown(Keys.Escape) )
+            {
+                return State.Quit;
+            }
+
+            if (keyboard.IsKeyDown(Keys.Right) && !oldState.IsKeyDown(Keys.Right))
             {
                 return State.Right;
             }
 
-            if (keyboard.IsKeyDown(Keys.Left))
+            if (keyboard.IsKeyDown(Keys.Left) && !oldState.IsKeyDown(Keys.Left))
             {
                 return State.Left;
             }
 
-            if (keyboard.IsKeyDown(Keys.Up))
-            {
+            if (keyboard.IsKeyDown(Keys.Up) && !oldState.IsKeyDown(Keys.Up))
+            { 
                 return State.Up;
             }
 
-            if (keyboard.IsKeyDown(Keys.Down))
+            if (keyboard.IsKeyDown(Keys.Down) && !oldState.IsKeyDown(Keys.Down))
             {
                 return State.Down;
             }
-
+            oldState = keyboard;
             return State.Nothing;
         }
     }

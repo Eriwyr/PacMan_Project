@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimatedObject.cs" />
+    <Compile Include="BufferInput.cs" />
     <Compile Include="character.cs" />
     <Compile Include="Element.cs" />
     <Compile Include="Game.cs" />
