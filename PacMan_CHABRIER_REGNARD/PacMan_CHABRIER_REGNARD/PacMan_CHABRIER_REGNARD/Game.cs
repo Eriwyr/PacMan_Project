@@ -22,7 +22,9 @@ namespace PacMan_CHABRIER_REGNARD
         public void update(State state)
         {
             ghost.computeNextMove(pacMan, map);
-            pacMan.movement(state,map);
+            pacMan.movement(state, map);
+            
+            
             ghost.movement(ghost.getNextMove(), map);
 
 

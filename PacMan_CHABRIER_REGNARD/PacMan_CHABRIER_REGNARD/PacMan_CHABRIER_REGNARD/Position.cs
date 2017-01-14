@@ -41,5 +41,10 @@ namespace PacMan_CHABRIER_REGNARD
             this.x = x;
             this.y = y;
         }
+
+        public bool equals(Position pos)
+        {
+            return (this.x == pos.x && this.y == pos.y);
+        }
     }
 }

@@ -14,23 +14,35 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Ghost()
         {
+            position = new Position(11, 14);
             target = new Position(0, 0);
+            state = State.Nothing;
             nextMove = State.Nothing;
             intersect = new bool[4];
             for (int i = 0; i < 4; i++)
-                intersect[i] = false;
+                intersect[i] = true;
         }
 
         public void computeNextMove(PacMan pac, Map map)
         {
+            resetIntersect();
             computeTargetTile(pac);
-            Position next = nextTile();
-            if(checkIntersection(next, map))
-            {
-               this.state =  selectIntersect();
-            } 
+            checkIntersection(map);
+            computeState();
+            
 
 
+        }
+
+        private void resetIntersect()
+        {
+            for (int i = 0; i < 4; i++)
+                intersect[i] = true;
+        }
+
+        private void computeState()
+        {
+            this.state = selectIntersect();
         }
 
         public State getNextMove()
@@ -41,26 +53,46 @@ namespace PacMan_CHABRIER_REGNARD
 
         private State selectIntersect()
         {
-            State inverse = (State)((int)this.state + 2 % 4);
-            intersect[(int)inverse] = false;
+
+            if(this.state != State.Nothing)
+            {
+                int inv = (int)this.state;
+                inv += 2;
+                inv %= 4;
+                intersect[inv] = false;
+            }
+            
+            Position tmp = new Position(0, 0);
+            //State inverse = (State)(inv);
+            
             int distance = 100000;
+            int manhattan = 0;
             int j = 0;
+            bool changed = false;
             for(int i = 0; i < 4; i++)
             {
                 if (intersect[i])
                 {
-
-                    if (manhattanDistance(target) < distance)
+                    tmp = nextTile((State)i);
+                    manhattan = manhattanDistance(target, tmp);
+                    if ( manhattan < distance)
+                    {
+                        distance = manhattan;
                         j = i;
+                        changed = true;
+                    }
+                        
                 }
             }
-
-            return (State) j; 
+            if(changed)
+                return (State) j;
+            return this.state;
         }
 
-        private int manhattanDistance(Position taget)
+
+        private int manhattanDistance(Position taget, Position pos)
         {
-            return (Math.Abs(this.position.getPosX() - target.getPosX()) + Math.Abs(this.position.getPosY() - target.getPosY()));
+            return (Math.Abs(pos.getPosX() - target.getPosX()) + Math.Abs(pos.getPosY() - target.getPosY()));
         }
 
         protected virtual void  computeTargetTile(PacMan pac)
@@ -68,41 +100,44 @@ namespace PacMan_CHABRIER_REGNARD
             //To override
         }
 
-        private bool checkIntersection(Position pos, Map map)
+        private void checkIntersection(Map map)
         {
             Position up, down, left, right;
-            int i = 0;
+            Position pos = this.position;
             up = new Position(pos.getPosX() - 1, pos.getPosY());
             down = new Position(pos.getPosX() + 1, pos.getPosY());
             left = new Position(pos.getPosX(), pos.getPosY()-1);
             right = new Position(pos.getPosX(), pos.getPosY()+1);
 
             Element elmt = map.checkElement(up);
-            if (elmt != Element.Wall)
+            if (elmt == Element.Wall)
             {
-                i++;
-                intersect[0] = true;
+                intersect[(int)State.Up] = false;
             }
                 
             elmt = map.checkElement(down);
-            if (elmt != Element.Wall)
-                i++;
+            if (elmt == Element.Wall)
+            { 
+                intersect[(int)State.Down] = false;
+            }
+                
             elmt = map.checkElement(left);
-            if (elmt != Element.Wall)
-                i++;
+            if (elmt == Element.Wall)
+            {
+                intersect[(int)State.Left] = false;
+            }
             elmt = map.checkElement(right);
-            if (elmt != Element.Wall)
-                i++;
-
-            if (i > 2)
-                return true;
-            return false;
+            if (elmt == Element.Wall)
+            {
+                intersect[(int)State.Right] = false;
+            }
+            
 
         }
 
-        private Position nextTile()
+        private Position nextTile(State state)
         {
-            switch (this.state)
+            switch (state)
             {
                 case State.Down:
                     return new Position(position.getPosX() + 1, position.getPosY());

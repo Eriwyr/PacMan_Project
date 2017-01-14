@@ -21,7 +21,7 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject wall;
         AnimatedObject bean;
         AnimatedObject pacMan;
-        //AnimatedObject ghost;
+        AnimatedObject ghost;
         int timer;
         int change;
         State stateDisplay;
@@ -71,7 +71,7 @@ namespace PacMan_CHABRIER_REGNARD
             wall = new AnimatedObject(textureWall, new Vector2(0f, 0f), new Vector2(20f, 20f));
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
-            //ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
 
             // TODO: use this.Content to load your game content here
         }
@@ -105,9 +105,10 @@ namespace PacMan_CHABRIER_REGNARD
             {
                 timer = 0;
                 State state = getInput();
-               
-                if(state != State.Nothing) // To keep in memory the last state 
-                    stateDisplay = state;
+
+                State currentState = game.getPacman().getState();
+                if(currentState != State.Nothing) // To keep in memory the last state 
+                    stateDisplay = currentState;
 
                 if (stateDisplay == State.Right)
                 {
@@ -165,18 +166,19 @@ namespace PacMan_CHABRIER_REGNARD
 
                 }
 
-
+                
 
                 game.update(state);
                 updateViews();
                 base.Update(gameTime);
+                
 
                 if (change == 10) //iterator to switch between two texture => make animation
                     change = 0;
                 change++;
                 
             }
-            timer++;
+            timer++; 
         }
 
         public void updateViews()
@@ -184,6 +186,8 @@ namespace PacMan_CHABRIER_REGNARD
             Position tmpPos = new Position(game.getPacman().getPosition().getPosX(), game.getPacman().getPosition().getPosY());
 
             pacMan.setPosition(new Vector2(tmpPos.getPosY()*20, tmpPos.getPosX()*20)); // We must invert x and y position beacause Vector2 has invert position.
+            tmpPos = new Position(game.getGhost().getPosition().getPosX(), game.getGhost().getPosition().getPosY());
+            ghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
         }
 
         /// <summary>
@@ -195,9 +199,11 @@ namespace PacMan_CHABRIER_REGNARD
             spriteBatch.Begin();
             GraphicsDevice.Clear(Color.Black);
             Position tmppos;
-            for (int x = 0; x < VX; x++)
+            int x = 0;
+            int y = 0;
+            for (x = 0; x < VX; x++)
             {
-                for (int y = 0; y < VY; y++)
+                for (y = 0; y < VY; y++)
                 {
                     tmppos = new Position(x, y);
 
@@ -227,6 +233,7 @@ namespace PacMan_CHABRIER_REGNARD
 
 
             spriteBatch.Draw(pacMan.getTexture(), pacMan.getPosition(), Color.White);
+            spriteBatch.Draw(ghost.getTexture(), ghost.getPosition(), Color.White);
             base.Draw(gameTime);
             spriteBatch.End();
         }

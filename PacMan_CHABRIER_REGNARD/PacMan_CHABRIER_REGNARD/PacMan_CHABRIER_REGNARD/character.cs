@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Character()
         {
-            position = new Position(1, 1);
+            position = new Position(20, 15);
         }
 
         public void movement(State state, Map map)
@@ -34,7 +34,8 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         position = posTemp;
                         this.state = state;
-                        map.setElement(posTemp, Element.Nothing);
+                        if( this is PacMan)
+                            map.setElement(posTemp, Element.Nothing);
                         
                     }
                     else
@@ -50,7 +51,8 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         position = posTemp;
                         this.state = state;
-                        map.setElement(posTemp, Element.Nothing);
+                        if (this is PacMan)
+                            map.setElement(posTemp, Element.Nothing);
                     }
                     else
                     {
@@ -66,7 +68,8 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         position = posTemp;
                         this.state = state;
-                        map.setElement(posTemp, Element.Nothing);
+                        if (this is PacMan)
+                            map.setElement(posTemp, Element.Nothing);
 
                     }
                     else
@@ -83,7 +86,8 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         position = posTemp;
                         this.state = state;
-                        map.setElement(posTemp, Element.Nothing);
+                        if (this is PacMan)
+                            map.setElement(posTemp, Element.Nothing);
                     }
                     else
                     {
@@ -93,8 +97,25 @@ namespace PacMan_CHABRIER_REGNARD
 
                     break;
             }
+
+            if (position.equals(map.getTP1()) && this.state == State.Left)
+            {
+                position.setPosX(map.getTP2().getPosX());
+                position.setPosY(map.getTP2().getPosY());
+                this.state = State.Left;
+            } else if (position.equals(map.getTP2()) && this.state == State.Right)
+            {
+                position.setPosX(map.getTP1().getPosX());
+                position.setPosY(map.getTP1().getPosY());
+                state = State.Right;
+            }
         }
         
+        public State getState()
+        {
+            return this.state;
+        }
+
         public Position getPosition()
         {
             return position;
