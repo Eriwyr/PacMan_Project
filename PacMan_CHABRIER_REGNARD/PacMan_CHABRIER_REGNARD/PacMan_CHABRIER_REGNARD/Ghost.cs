@@ -5,10 +5,13 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
+    public enum Aggressivity {aggresive, defensive };
+
     class Ghost : Character
     {
 
         protected Position target;
+        private Aggressivity aggressivity;
         private State nextMove;
         private bool[] intersect;
 
@@ -16,6 +19,7 @@ namespace PacMan_CHABRIER_REGNARD
         {
             position = new Position(11, 14);
             target = new Position(0, 0);
+            aggressivity = Aggressivity.aggresive;
             state = State.Nothing;
             nextMove = State.Nothing;
             intersect = new bool[4];
@@ -150,6 +154,21 @@ namespace PacMan_CHABRIER_REGNARD
                 default:
                     return position;
             }
+        }
+
+       public Aggressivity getAggressivity()
+        {
+            return aggressivity;
+        }
+
+        public void setDefensive()
+        {
+            aggressivity = Aggressivity.defensive;
+        }
+
+        public void setAgresive()
+        {
+            aggressivity = Aggressivity.aggresive;
         }
     }
 }

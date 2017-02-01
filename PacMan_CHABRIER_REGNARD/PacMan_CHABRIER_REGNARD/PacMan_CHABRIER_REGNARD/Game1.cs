@@ -14,18 +14,24 @@ namespace PacMan_CHABRIER_REGNARD
     /// <summary>
     /// This is the main type for your game
     /// </summary>
+    enum GameState { playing, relaunch }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         AnimatedObject wall;
         AnimatedObject bean;
+        AnimatedObject bigBean;
         AnimatedObject pacMan;
         AnimatedObject ghost;
         BufferInput buffer;
         KeyboardState oldState;
+        GameState gameState;
         int timer;
         int change;
+        int changeDead;
+        int ghostDefensiveTime;
+        bool pacManIsDead;
         State stateDisplay;
         Game game;
 
@@ -39,8 +45,11 @@ namespace PacMan_CHABRIER_REGNARD
             game = new Game();
             timer = 0;
             change = 0;
+            changeDead = 0;
+            ghostDefensiveTime = 0;
             stateDisplay = State.Nothing;
             buffer = new BufferInput();
+            gameState = GameState.playing;
         }
 
         /// <summary>
@@ -64,7 +73,6 @@ namespace PacMan_CHABRIER_REGNARD
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
             graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 660;
             graphics.ApplyChanges();
@@ -73,6 +81,7 @@ namespace PacMan_CHABRIER_REGNARD
             Texture2D textureWall = Content.Load<Texture2D>("mur");
             wall = new AnimatedObject(textureWall, new Vector2(0f, 0f), new Vector2(20f, 20f));
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            bigBean = new AnimatedObject(Content.Load<Texture2D>("gros_bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
 
@@ -96,7 +105,6 @@ namespace PacMan_CHABRIER_REGNARD
         protected override void Update(GameTime gameTime)
         {
             
-            
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -112,99 +120,179 @@ namespace PacMan_CHABRIER_REGNARD
             if(state != State.Nothing)
                 buffer.push(state);
 
-            if (timer == 6)
+            if (gameState == GameState.relaunch)// If we relaunch the game after pacman was dead
             {
-                timer = 0;
-                
-
-                State currentState = game.getPacman().getState();
-                if(currentState != State.Nothing) // To keep in memory the last state 
-                    stateDisplay = currentState;
-
-                if (stateDisplay == State.Right)
+                if (timer == 12)//We play animation more slower
                 {
-                    if (change % 2 == 0)
+                    timer = 0;
+
+                    game.getGhost().getPosition().setPosXY(15, 15); //We send ghost to the spawn
+                    switch (changeDead) // We play the dead animation of pacman
                     {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanright"));
+                        case 0:
+                            pacMan.setTexture(Content.Load<Texture2D>("Mort0"));
+                            changeDead++;
+                            break;
+                        case 1:
+                            pacMan.setTexture(Content.Load<Texture2D>("Mort1"));
+                            changeDead++;
+                            break;
+                        case 2:
+                            pacMan.setTexture(Content.Load<Texture2D>("Mort2"));
+                            changeDead++;
+                            break;
+                        case 3:
+                            pacMan.setTexture(Content.Load<Texture2D>("Mort3"));
+                            changeDead = 0;
+                            game.getPacman().getPosition().setPosXY(17, 14);// When we are done we send pacman to his spawn
+                            gameState = GameState.playing; // We launch the game again
+                            break;
+
+                    }
+                }
+            }
+            else // if pacman is not dead
+            {
+                if (timer == 6)
+                {
+                    timer = 0;
+                    State currentState = game.getPacman().getState();
+                    if (currentState != State.Nothing) // To keep in memory the last state 
+                        stateDisplay = currentState;
+
+                    if (stateDisplay == State.Right)
+                    {
+                        if (change % 2 == 0)
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanright"));
+                        }
+                        else
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanright1"));
+                        }
+
+
+                    }
+
+                    if (stateDisplay == State.Left)
+                    {
+                        if (change % 2 == 0)
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanleft"));
+                        }
+                        else
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanleft1"));
+                        }
+
+
+                    }
+
+                    if (stateDisplay == State.Up)
+                    {
+                        if (change % 2 == 0)
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanup"));
+                        }
+                        else
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmanup1"));
+                        }
+
+
+                    }
+
+                    if (stateDisplay == State.Down)
+                    {
+                        if (change % 2 == 0)
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmandown"));
+                        }
+                        else
+                        {
+                            pacMan.setTexture(Content.Load<Texture2D>("pacmandown1"));
+                        }
+
+
+                    }
+
+                    game.computeGhosts();
+                    if (game.isTouched())// If pacman and ghost enter in colision 
+                    {
+                        gameState = GameState.relaunch;// We change the game state
+                    }
+                    if (buffer.getCount() > 0)
+                    {
+                        if (game.checkPacman(buffer.getHead()))
+                        {
+                            game.pacmanMovement(buffer.pop()); 
+                            buffer.clear();
+                             
+                        }
+                        else
+                        {
+                            game.pacmanMovement(State.Nothing);
+                        }
                     }
                     else
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanright1"));
-                    }
-
-                   
-                }
-
-                if (stateDisplay == State.Left)
-                {
-                    if (change % 2 == 0)
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanleft"));
-                    }
-                    else
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanleft1"));
-                    }
-
-
-                }
-
-                if (stateDisplay == State.Up)
-                {
-                    if (change % 2 == 0)
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanup"));
-                    }
-                    else
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmanup1"));
-                    }
-
-
-                }
-
-                if (stateDisplay == State.Down)
-                {
-                    if (change % 2 == 0)
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmandown"));
-                    }
-                    else
-                    {
-                        pacMan.setTexture(Content.Load<Texture2D>("pacmandown1"));
-                    }
-
-
-                }
-
-                game.computeGhosts();
-                if(buffer.getCount() > 0)
-                {
-                    if (game.checkPacman(buffer.getHead()))
-                    {
-                        game.pacmanMovement(buffer.pop());
-                        buffer.clear();
-
-                    } else
                     {
                         game.pacmanMovement(State.Nothing);
                     }
-                } else
-                {
-                    game.pacmanMovement(State.Nothing);
-                }
-                
+                    Console.WriteLine(game.getMap().checkElement(game.getPacman().getPosition()));
+                    if (game.getMap().checkElement(game.getPacman().getPosition()) == Element.BigBeans) //We check if the element is a bigBean
+                    {
+                        Console.WriteLine("OI¨QJSFS");
+                        game.getGhost().setDefensive(); // we set ghost to vulnerable state
+                    }
 
-                game.ghostMovement();
+                    if(game.getGhost().getAggressivity() == Aggressivity.defensive) // If pacman eat bigBean
+                    {
+                        if(ghostDefensiveTime == 15)//We make ghost vulnerable during a time
+                        {
+                            ghostDefensiveTime = 0;
+                            game.getGhost().setAgresive();
+                            ghost.setTexture(Content.Load<Texture2D>("ghost"));//we reset orginial texture
+                        }
+                        else
+                        {// if ghost is vulnerabel, we set his sprite to afraidGhost
+                            if(ghostDefensiveTime % 2 == 0)
+                            {
+                                ghost.setTexture(Content.Load<Texture2D>("FamtomePeur0"));
+                            }
+                            else
+                            {
+                                ghost.setTexture(Content.Load<Texture2D>("FamtomePeur1"));
+                            }
+
+                            ghostDefensiveTime++;//We increment the time
+                        }
+                    }
+                    if (game.isTouched())// If pacman and ghost enter in colision 
+                    {
+                        gameState = GameState.relaunch;// We change the game state
+                    }
+                    game.ghostMovement(); // We move the ghost
+
+                    if (game.isTouched())// If pacman and ghost enter in colision 
+                    {
+                        gameState = GameState.relaunch;// We change the game state
+                    }
+
+                    if(!(game.getPacman().getState() == State.Nothing))
+                    {
+                        if (change == 10) //iterator to switch between two texture => make animation
+                            change = 0;
+                        change++;
+                    }
+
+                }
+
                 updateViews();
                 base.Update(gameTime);
                 
-
-                if (change == 10) //iterator to switch between two texture => make animation
-                    change = 0;
-                change++;
-                
             }
+            
+
             timer++; 
         }
 
@@ -254,13 +342,28 @@ namespace PacMan_CHABRIER_REGNARD
 
                         spriteBatch.Draw(bean.getTexture(), pos, Color.White);
                     }
+
+                    if (game.getMap().checkElement(tmppos) == Element.BigBeans)
+                    {
+                        int xpos, ypos;
+                        xpos = x * 20;
+                        ypos = y * 20;
+                        Vector2 pos = new Vector2(ypos, xpos);
+
+                        spriteBatch.Draw(bigBean.getTexture(), pos, Color.White);
+                    }
                 }
             }
 
 
+            
+            spriteBatch.Draw(pacMan.getTexture(), pacMan.getPos(), Color.White);
 
-            spriteBatch.Draw(pacMan.getTexture(), pacMan.getPosition(), Color.White);
-            spriteBatch.Draw(ghost.getTexture(), ghost.getPosition(), Color.White);
+            if (gameState == GameState.playing) // If pacman is dead we dont display ghosts during this time 
+            {
+                spriteBatch.Draw(ghost.getTexture(), ghost.getPos(), Color.White);
+            }
+            
             base.Draw(gameTime);
             spriteBatch.End();
         }
@@ -295,6 +398,11 @@ namespace PacMan_CHABRIER_REGNARD
             }
             oldState = keyboard;
             return State.Nothing;
+        }
+
+        public void Quit()
+        {
+            this.Exit();
         }
     }
 }

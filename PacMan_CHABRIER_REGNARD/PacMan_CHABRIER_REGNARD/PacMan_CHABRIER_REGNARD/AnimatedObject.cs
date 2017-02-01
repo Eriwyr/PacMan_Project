@@ -23,7 +23,7 @@ namespace PacMan_CHABRIER_REGNARD
             this.texture = texture;
         }
 
-        public Vector2 getPosition()
+        public Vector2 getPos()
         {
             return position;
         }

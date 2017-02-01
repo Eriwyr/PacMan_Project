@@ -10,6 +10,7 @@ namespace PacMan_CHABRIER_REGNARD
         private Map map;
         private PacMan pacMan;
         private Ghost ghost;
+        int score;
 
 
         public Game()
@@ -17,8 +18,25 @@ namespace PacMan_CHABRIER_REGNARD
             map = new Map();
             pacMan = new PacMan();
             ghost = new RedGhost();
+            score = 0;
         }
 
+        public bool isTouched()
+        {   
+            if (pacMan.getPosition().equals(ghost.getPosition()))
+            {
+                if (ghost.getAggressivity() == Aggressivity.aggresive)
+                {
+                    pacMan.loseLife();
+                    return true;    //pacMan.getPosition().setPosXY(17, 14);
+                }
+                else // if pacman can eat ghost, we teleport the ghost in the spawn
+                {
+                    ghost.getPosition().setPosXY(15, 16);
+                }
+            }
+            return false;
+        }
         public void pacmanMovement(State state)
         {
             pacMan.movement(state, map);
@@ -33,7 +51,6 @@ namespace PacMan_CHABRIER_REGNARD
         {
             ghost.movement(ghost.getNextMove(), map);
         }
-
 
         public bool checkPacman(State state)
         {
@@ -53,6 +70,10 @@ namespace PacMan_CHABRIER_REGNARD
         public Ghost getGhost()
         {
             return ghost;
+        }
+        public void increaseScore()
+        {
+            score++;
         }
     }
 }
