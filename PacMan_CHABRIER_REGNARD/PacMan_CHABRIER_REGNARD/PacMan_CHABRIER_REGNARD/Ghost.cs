@@ -6,12 +6,14 @@ using System.Text;
 namespace PacMan_CHABRIER_REGNARD
 {
     public enum Aggressivity {aggresive, defensive };
+    public enum Mode {Normal, Scatter};
 
     class Ghost : Character
     {
 
         protected Position target;
-        private Aggressivity aggressivity;
+        protected Aggressivity aggressivity;
+        protected Mode mode;
         private State nextMove;
         private bool[] intersect;
 
@@ -94,7 +96,7 @@ namespace PacMan_CHABRIER_REGNARD
         }
 
 
-        private int manhattanDistance(Position taget, Position pos)
+        protected int manhattanDistance(Position taget, Position pos)
         {
             return (Math.Abs(pos.getPosX() - target.getPosX()) + Math.Abs(pos.getPosY() - target.getPosY()));
         }
@@ -169,6 +171,16 @@ namespace PacMan_CHABRIER_REGNARD
         public void setAgresive()
         {
             aggressivity = Aggressivity.aggresive;
+        }
+
+        public void setScatter()
+        {
+            mode = Mode.Scatter;
+        }
+
+        public void setNormal()
+        {
+            mode = Mode.Normal;
         }
     }
 }
