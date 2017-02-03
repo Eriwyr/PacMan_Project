@@ -23,7 +23,9 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject bean;
         AnimatedObject bigBean;
         AnimatedObject pacMan;
-        AnimatedObject ghost;
+        AnimatedObject redghost;
+        AnimatedObject pinkghost;
+        AnimatedObject yellowghost;
         BufferInput buffer;
         KeyboardState oldState;
         GameState gameState;
@@ -31,6 +33,7 @@ namespace PacMan_CHABRIER_REGNARD
         int change;
         int changeDead;
         int ghostDefensiveTime;
+        int[,] counters;
         bool pacManIsDead;
         State stateDisplay;
         Game game;
@@ -50,6 +53,12 @@ namespace PacMan_CHABRIER_REGNARD
             stateDisplay = State.Nothing;
             buffer = new BufferInput();
             gameState = GameState.playing;
+            counters = new int[3, 2];
+            for(int i = 0; i < 3; i++)
+            {
+                counters[i, 0] = 0;
+                counters[i, 1] = 0;
+            }
         }
 
         /// <summary>
@@ -83,8 +92,9 @@ namespace PacMan_CHABRIER_REGNARD
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             bigBean = new AnimatedObject(Content.Load<Texture2D>("gros_bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
-            ghost = new AnimatedObject(Content.Load<Texture2D>("ghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
-
+            redghost = new AnimatedObject(Content.Load<Texture2D>("redghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            pinkghost = new AnimatedObject(Content.Load<Texture2D>("pinkghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            yellowghost = new AnimatedObject(Content.Load<Texture2D>("yellowghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             // TODO: use this.Content to load your game content here
         }
 
@@ -125,8 +135,12 @@ namespace PacMan_CHABRIER_REGNARD
                 if (timer == 12)//We play animation more slower
                 {
                     timer = 0;
-
-                    game.getGhost().getPosition().setPosXY(15, 15); //We send ghost to the spawn
+                    
+                    for(int i = 0; i < 4; i++)
+                    {
+                        game.getGhost(i).getPosition().setPosXY(15, 15); //We send ghost to the spawn
+                    }
+                    
                     switch (changeDead) // We play the dead animation of pacman
                     {
                         case 0:
@@ -242,31 +256,42 @@ namespace PacMan_CHABRIER_REGNARD
                     if (game.getMap().checkElement(game.getPacman().getPosition()) == Element.BigBeans) //We check if the element is a bigBean
                     {
                         Console.WriteLine("OI¨QJSFS");
-                        game.getGhost().setDefensive(); // we set ghost to vulnerable state
+                        for(int i =0; i < 4; i++)
+                            game.getGhost(i).setDefensive(); // we set ghost to vulnerable state
                     }
 
-                    if(game.getGhost().getAggressivity() == Aggressivity.defensive) // If pacman eat bigBean
+                    for(int i = 0; i < 4; i++)
                     {
-                        if(ghostDefensiveTime == 15)//We make ghost vulnerable during a time
+                        if (game.getGhost(i).getAggressivity() == Aggressivity.defensive) // If pacman eat bigBean
                         {
-                            ghostDefensiveTime = 0;
-                            game.getGhost().setAgresive();
-                            ghost.setTexture(Content.Load<Texture2D>("ghost"));//we reset orginial texture
-                        }
-                        else
-                        {// if ghost is vulnerabel, we set his sprite to afraidGhost
-                            if(ghostDefensiveTime % 2 == 0)
+                            if (ghostDefensiveTime == 15)//We make ghost vulnerable during a time
                             {
-                                ghost.setTexture(Content.Load<Texture2D>("FamtomePeur0"));
+                                ghostDefensiveTime = 0;
+                                game.getGhost(i).setAgresive();
+                                redghost.setTexture(Content.Load<Texture2D>("ghost"));//we reset orginial texture
+                                pinkghost.setTexture(Content.Load<Texture2D>("ghost"));//we reset orginial texture
+                                yellowghost.setTexture(Content.Load<Texture2D>("ghost"));//we reset orginial texture
                             }
                             else
-                            {
-                                ghost.setTexture(Content.Load<Texture2D>("FamtomePeur1"));
-                            }
+                            {// if ghost is vulnerabel, we set his sprite to afraidGhost
+                                if (ghostDefensiveTime % 2 == 0)
+                                {
+                                    redghost.setTexture(Content.Load<Texture2D>("FamtomePeur0"));
+                                    pinkghost.setTexture(Content.Load<Texture2D>("FantomePeur0"));
+                                    yellowghost.setTexture(Content.Load<Texture2D>("FantomePeur0"));
+                                }
+                                else
+                                {
+                                    redghost.setTexture(Content.Load<Texture2D>("FamtomePeur1"));
+                                    pinkghost.setTexture(Content.Load<Texture2D>("FantomePeur1"));
+                                    yellowghost.setTexture(Content.Load<Texture2D>("FantomePeur1"));
+                                }
 
-                            ghostDefensiveTime++;//We increment the time
+                                ghostDefensiveTime++;//We increment the time
+                            }
                         }
                     }
+                    
                     if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
@@ -301,8 +326,12 @@ namespace PacMan_CHABRIER_REGNARD
             Position tmpPos = new Position(game.getPacman().getPosition().getPosX(), game.getPacman().getPosition().getPosY());
 
             pacMan.setPosition(new Vector2(tmpPos.getPosY()*20, tmpPos.getPosX()*20)); // We must invert x and y position beacause Vector2 has invert position.
-            tmpPos = new Position(game.getGhost().getPosition().getPosX(), game.getGhost().getPosition().getPosY());
-            ghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
+            tmpPos = new Position(game.getGhost(0).getPosition().getPosX(), game.getGhost(0).getPosition().getPosY());
+            redghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
+            tmpPos = new Position(game.getGhost(1).getPosition().getPosX(), game.getGhost(1).getPosition().getPosY());
+            pinkghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
+            tmpPos = new Position(game.getGhost(2).getPosition().getPosX(), game.getGhost(2).getPosition().getPosY());
+            yellowghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
         }
 
         /// <summary>
@@ -361,7 +390,10 @@ namespace PacMan_CHABRIER_REGNARD
 
             if (gameState == GameState.playing) // If pacman is dead we dont display ghosts during this time 
             {
-                spriteBatch.Draw(ghost.getTexture(), ghost.getPos(), Color.White);
+                
+                spriteBatch.Draw(redghost.getTexture(), redghost.getPos(), Color.White);
+                spriteBatch.Draw(pinkghost.getTexture(), pinkghost.getPos(), Color.White);
+                spriteBatch.Draw(yellowghost.getTexture(), yellowghost.getPos(), Color.White);
             }
             
             base.Draw(gameTime);
