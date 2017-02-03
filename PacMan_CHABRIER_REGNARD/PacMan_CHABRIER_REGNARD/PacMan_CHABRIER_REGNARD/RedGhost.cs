@@ -9,7 +9,16 @@ namespace PacMan_CHABRIER_REGNARD
     {
         protected override void computeTargetTile(PacMan pac)
         {
-            this.target = new Position(pac.getPosition().getPosX(), pac.getPosition().getPosY());
+            switch (this.mode)
+            {
+                case Mode.Scatter:
+                    this.target = new Position(-1, 26);
+                    break;
+                case Mode.Normal:
+                    this.target = new Position(pac.getPosition().getPosX(), pac.getPosition().getPosY());
+                    break;
+            }
+            
         }
     }
 }
