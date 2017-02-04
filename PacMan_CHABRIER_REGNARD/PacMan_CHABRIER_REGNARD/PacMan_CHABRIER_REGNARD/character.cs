@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Character()
         {
-            position = new Position(16, 10);
+            position = new Position(23, 13);
             state = State.Wait;
         }
 
