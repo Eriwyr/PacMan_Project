@@ -14,18 +14,18 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Character()
         {
-            position = new Position(20, 15);
+            position = new Position(16, 10);
+            state = State.Wait;
         }
 
-        public void movement(State state, Map map)
+        public Boolean movement(State state, Map map)
         {
             Position posTemp = new Position(position.getPosX(),position.getPosY());
-
+            Boolean chase = false;
             switch (state)
             {
                 case State.Nothing:
-                    movement(this.state, map);
-                    break;
+                    return movement(this.state, map);
 
                 case State.Up:
                     posTemp.setPosX(posTemp.getPosX() - 1);
@@ -35,7 +35,12 @@ namespace PacMan_CHABRIER_REGNARD
                         position = posTemp;
                         this.state = state;
                         if( this is PacMan)
+                        {
+                            if (map.checkElement(posTemp) == Element.BigBeans)
+                                chase = true;
                             map.setElement(posTemp, Element.Nothing);
+                        }
+                           
                         
                     }
                     else
@@ -52,7 +57,14 @@ namespace PacMan_CHABRIER_REGNARD
                         position = posTemp;
                         this.state = state;
                         if (this is PacMan)
+                        {
+                            if (map.checkElement(posTemp) == Element.BigBeans)
+                            {
+                                chase = true;
+                            }
+                                
                             map.setElement(posTemp, Element.Nothing);
+                        }
                     }
                     else
                     {
@@ -69,7 +81,11 @@ namespace PacMan_CHABRIER_REGNARD
                         position = posTemp;
                         this.state = state;
                         if (this is PacMan)
+                        {
+                            if (map.checkElement(posTemp) == Element.BigBeans)
+                                chase = true;
                             map.setElement(posTemp, Element.Nothing);
+                        }
 
                     }
                     else
@@ -87,7 +103,11 @@ namespace PacMan_CHABRIER_REGNARD
                         position = posTemp;
                         this.state = state;
                         if (this is PacMan)
+                        {
+                            if (map.checkElement(posTemp) == Element.BigBeans)
+                                chase = true;
                             map.setElement(posTemp, Element.Nothing);
+                        }
                     }
                     else
                     {
@@ -103,17 +123,35 @@ namespace PacMan_CHABRIER_REGNARD
                 position.setPosX(map.getTP2().getPosX());
                 position.setPosY(map.getTP2().getPosY());
                 this.state = State.Left;
-                if (map.checkElement(position) != Element.Nothing)
-                    map.setElement(position, Element.Nothing);
+                if (this is PacMan)
+                {
+                    if (map.checkElement(posTemp) == Element.BigBeans)
+                        chase = true;
+                    if (map.checkElement(position) != Element.Nothing)
+                        map.setElement(position, Element.Nothing);
+                }
+               
 
             } else if (position.equals(map.getTP2()) && this.state == State.Right)
             {
                 position.setPosX(map.getTP1().getPosX());
                 position.setPosY(map.getTP1().getPosY());
                 state = State.Right;
-                if (map.checkElement(position) != Element.Nothing)
-                    map.setElement(position, Element.Nothing);
+                if (this is PacMan)
+                {
+                    if (map.checkElement(posTemp) == Element.BigBeans)
+                        chase = true;
+                    if (map.checkElement(position) != Element.Nothing)
+                        map.setElement(position, Element.Nothing);
+                }
             }
+
+            if (chase)
+            {
+                Console.WriteLine("Returning TRUE");
+                return true;
+            }
+            return false;
         }
 
 
