@@ -24,6 +24,17 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject bigBean;
         AnimatedObject pacMan;
         AnimatedObject[] ghosts;
+        SpriteFont font;
+        Vector2 fontPosLife;
+        Vector2 fontPosScore;
+        SoundEffect invicible;
+        SoundEffect monsterEaten;
+        SoundEffect pelletEat1;
+        SoundEffect pelletEat2;
+        SoundEffect siren;
+        SoundEffect death;
+        SoundEffectInstance siren1;
+        SoundEffectInstance invicible1;
         /*AnimatedObject redghost;
         AnimatedObject pinkghost;
         AnimatedObject yellowghost;
@@ -36,6 +47,7 @@ namespace PacMan_CHABRIER_REGNARD
         int changeDead;
         int ghostDefensiveTime;
         int[,] counters;
+        int score;
         bool pacManIsDead;
         State stateDisplay;
         Game game;
@@ -51,6 +63,7 @@ namespace PacMan_CHABRIER_REGNARD
             timer = 0;
             change = 0;
             changeDead = 0;
+            score = 0;
             ghostDefensiveTime = 0;
             stateDisplay = State.Nothing;
             buffer = new BufferInput();
@@ -101,6 +114,18 @@ namespace PacMan_CHABRIER_REGNARD
             ghosts[1] = new AnimatedObject(Content.Load<Texture2D>("pinkghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[2] = new AnimatedObject(Content.Load<Texture2D>("yellowghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[3] = new AnimatedObject(Content.Load<Texture2D>("blueghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            font = Content.Load<SpriteFont>("font");
+            fontPosLife = new Vector2(620, 30);
+            fontPosScore = new Vector2(620, 90);
+            invicible = Content.Load<SoundEffect>("Invincible"); 
+            monsterEaten = Content.Load<SoundEffect>("MonsterEaten"); 
+            pelletEat1 =Content.Load<SoundEffect>("PelletEat1"); 
+            pelletEat2 =Content.Load<SoundEffect>("PelletEat2");
+            siren =Content.Load<SoundEffect>("Siren");
+            death = Content.Load<SoundEffect>("Death");
+            siren1 = siren.CreateInstance();
+            invicible1 = invicible.CreateInstance();
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -154,6 +179,7 @@ namespace PacMan_CHABRIER_REGNARD
 
             if (gameState == GameState.relaunch)// If we relaunch the game after pacman was dead
             {
+                siren1.Stop();
                 if (timer == 12)//We play animation more slower
                 {
                     timer = 0;
@@ -161,6 +187,7 @@ namespace PacMan_CHABRIER_REGNARD
                     switch (changeDead) // We play the dead animation of pacman
                     {
                         case 0:
+                            death.Play();
                             pacMan.setTexture(Content.Load<Texture2D>("Mort0"));
                             changeDead++;
                             break;
@@ -174,20 +201,41 @@ namespace PacMan_CHABRIER_REGNARD
                             break;
                         case 3:
                             pacMan.setTexture(Content.Load<Texture2D>("Mort3"));
+                            changeDead++;
+                            break;
+                        case 4:
+                            changeDead++;
+                       
+                            break;
+                        case 5:
                             changeDead = 0;
                             game.reset();
-                            // game.getPacman().getPosition().setPosXY(17, 14);// When we are done we send pacman to his spawn
-                            gameState = GameState.playing; // We launch the game again
+                            gameState = GameState.playing;// We launch the game again
                             break;
-
                     }
                 }
             }
             else // if pacman is not dead
             {
+
+                if (game.getGamePlay() == GamePlay.Hungry)
+                {
+                    siren1.Stop();
+                    invicible1.Play();
+                }
+                else
+                {
+                    invicible1.Stop();
+                    siren1.Play();
+                }
+                
+                    
+                    
                 if (timer == 7)
                 {
+
                     timer = 0;
+
                     State currentState = game.getPacman().getState();
                     if (currentState != State.Nothing) // To keep in memory the last state 
                         stateDisplay = currentState;
@@ -252,6 +300,10 @@ namespace PacMan_CHABRIER_REGNARD
                     if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
+                    }
+                    if (game.getHasEaten())
+                    {
+                        monsterEaten.Play();
                     }
                     if (buffer.getCount() > 0)
                     {
@@ -327,13 +379,20 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         gameState = GameState.relaunch;// We change the game state
                     }
+                    if (game.getHasEaten())
+                    {
+                        monsterEaten.Play();
+                    }
                     game.ghostMovement(); // We move the ghost
 
                     if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
                     }
-
+                    if (game.getHasEaten())
+                    {
+                        monsterEaten.Play();
+                    }
                     if (!(game.getPacman().getState() == State.Nothing))
                     {
                         if (change == 10) //iterator to switch between two texture => make animation
@@ -439,6 +498,31 @@ namespace PacMan_CHABRIER_REGNARD
                 spriteBatch.Draw(yellowghost.getTexture(), yellowghost.getPos(), Color.White);
                 spriteBatch.Draw(blueghost.getTexture(), blueghost.getPos(), Color.White);*/
             }
+
+            // this being the line that answers your question
+
+            Vector2 fontOrigin = font.MeasureString(game.getPacman().getLife().ToString()) / 2;
+            spriteBatch.DrawString(font,"Life : "+ game.getPacman().getLife().ToString(), fontPosLife, Color.Yellow,0, fontOrigin, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
+
+            if (game.getPacman().getScore() == (score + 10)) //If pacman eat pellet we play the pellet sounds
+            {   
+                score += 10;
+                if(change%2 == 0)
+                {
+                    pelletEat1.Play();
+                }
+                else
+                {
+                    pelletEat2.Play();
+                }
+            }
+            if(game.getPacman().getScore() == (score + 200))
+            {
+                score += 200;
+                invicible.Play();
+            }
+            Vector2 fontOrigin2 = font.MeasureString(game.getPacman().getScore().ToString()) / 2;
+            spriteBatch.DrawString(font, "Score : " + game.getPacman().getScore().ToString(), fontPosScore, Color.Yellow, 0, fontOrigin2, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
 
             base.Draw(gameTime);
             spriteBatch.End();

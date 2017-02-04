@@ -11,11 +11,12 @@ namespace PacMan_CHABRIER_REGNARD
     {
         protected Position position;
         protected State state;
-
+        protected int score;
         public Character()
         {
-            position = new Position(23, 13);
+            position = new Position(17, 14);
             state = State.Wait;
+            score = 0;
         }
 
         public Boolean movement(State state, Map map)
@@ -34,14 +35,20 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         position = posTemp;
                         this.state = state;
-                        if( this is PacMan)
+
+                        if ( this is PacMan)
                         {
                             if (map.checkElement(posTemp) == Element.BigBeans)
+                            {
+                                score += 200;
                                 chase = true;
+                            }
+                            if (map.checkElement(posTemp) == Element.Beans)
+                                score += 10;
                             map.setElement(posTemp, Element.Nothing);
                         }
-                           
-                        
+
+
                     }
                     else
                     {
@@ -60,9 +67,11 @@ namespace PacMan_CHABRIER_REGNARD
                         {
                             if (map.checkElement(posTemp) == Element.BigBeans)
                             {
+                                score += 200;
                                 chase = true;
                             }
-                                
+                            if (map.checkElement(posTemp) == Element.Beans)
+                                score += 10;
                             map.setElement(posTemp, Element.Nothing);
                         }
                     }
@@ -83,7 +92,12 @@ namespace PacMan_CHABRIER_REGNARD
                         if (this is PacMan)
                         {
                             if (map.checkElement(posTemp) == Element.BigBeans)
+                            {
+                                score += 200;
                                 chase = true;
+                            }
+                            if (map.checkElement(posTemp) == Element.Beans)
+                                score += 10;
                             map.setElement(posTemp, Element.Nothing);
                         }
 
@@ -105,7 +119,13 @@ namespace PacMan_CHABRIER_REGNARD
                         if (this is PacMan)
                         {
                             if (map.checkElement(posTemp) == Element.BigBeans)
+                            {
+                                score += 200;
                                 chase = true;
+                            }
+                                
+                            if (map.checkElement(posTemp) == Element.Beans)
+                                score += 10;
                             map.setElement(posTemp, Element.Nothing);
                         }
                     }
@@ -203,6 +223,10 @@ namespace PacMan_CHABRIER_REGNARD
         public Position getPosition()
         {
             return position;
+        }
+        public int getScore()
+        {
+            return score;
         }
 
     }
