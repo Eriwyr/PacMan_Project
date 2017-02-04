@@ -10,76 +10,136 @@ namespace PacMan_CHABRIER_REGNARD
         private Map map;
         private PacMan pacMan;
         private Ghost[] ghosts;
-        public static int[,] countersFixed;
+        private int[,] countersFixed;
         private int[,] countersChanging;
+        private int[] turnToGoOut;
         int score;
-        Boolean scatter;
+        private Boolean[] scatter;
 
 
         public Game()
         {
             map = new Map();
             pacMan = new PacMan();
-            ghosts = new Ghost[3];
+            ghosts = new Ghost[4];
             ghosts[0] = new RedGhost();
             ghosts[1] = new PinkGhost();
             ghosts[2] = new YellowGhost();
+            ghosts[3] = new BlueGhost();
             score = 0;
-            countersFixed = new int[3, 2];
-            countersChanging = new int[3, 2];
-            scatter = false;
-            for(int i = 0; i < 3; i++)
+            countersFixed = new int[4, 2];
+            countersChanging = new int[4, 2];
+            scatter = new Boolean[4];
+            turnToGoOut = new int[4];
+            for(int i = 0; i < 4; i++)
             {
-                countersFixed[i, 0] = 7;
-                countersFixed[i, 1] = 20;
-            }
-            for (int i = 0; i < 3; i++)
-            {
+                countersFixed[i, 0] = 0;
+                countersFixed[i, 1] = 2000000;
                 countersChanging[i, 0] = 0;
                 countersChanging[i, 1] = 0;
+                scatter[i] = false;
+                turnToGoOut[i] = 0;
             }
+            
+        }
+
+        public void reset()
+        {
+            for(int i = 0; i < ghosts.Length; i++)
+            {
+                ghosts[i].getPosition().setPosXY(13, 14);
+                ghosts[i].setMode(Mode.StayIn);
+                ghosts[i].setTurnToGoOut(ghosts[i].getTurnToGoOut() / 2);
+                turnToGoOut[i] = 0;
+            }
+
+            pacMan.getPosition().setPosXY(23, 13);
         }
 
         public bool isTouched()
-        {   
-            foreach(Ghost ghost in ghosts)
+        {
+            for(int i = 0; i < ghosts.Length; i++)
             {
-           
-            if (pacMan.getPosition().equals(ghost.getPosition()))
-            {
-                if (ghost.getAggressivity() == Aggressivity.aggresive)
+
+                if (pacMan.getPosition().equals(ghosts[i].getPosition()))
                 {
-                    pacMan.loseLife();
-                    return true;    //pacMan.getPosition().setPosXY(17, 14);
+                    if (ghosts[i].getAggressivity() == Aggressivity.aggresive)
+                    {
+                        pacMan.loseLife();
+                        return true;    //pacMan.getPosition().setPosXY(17, 14);
+                    }
+                    else // if pacman can eat ghost, we teleport the ghost in the spawn
+                    {
+                        ghosts[i].getPosition().setPosXY(13, 14);
+                        ghosts[i].setAgresive();
+                        ghosts[i].setTurnToGoOut(150);
+                        ghosts[i].setMode(Mode.StayIn);
+                        turnToGoOut[i] = 0;
+                    }
                 }
-                else // if pacman can eat ghost, we teleport the ghost in the spawn
-                {
-                    ghost.getPosition().setPosXY(15, 16);
-                }
-            }
-           
             }
             return false;
         }
         public void pacmanMovement(State state)
         {
-            pacMan.movement(state, map);
+
+            
+            if(pacMan.movement(state, map) == true)
+            {
+                for(int i = 0; i < 4; i++)
+                {
+                    ghosts[i].setDefensive();
+                }
+            } else
+            {
+                
+            }
         }
 
         public void computeGhosts()
         {
-            foreach(Ghost ghost in ghosts)
+
+            for(int i = 0; i < ghosts.Length; i++)
             {
                 incrementCounters();
                 compareCounters();
-                if (scatter)
-                    ghost.setScatter();
-                else
-                    ghost.setNormal();
-                ghost.computeNextMove(pacMan, map);
 
+                if(ghosts[i] is BlueGhost)
+                {
+                    Console.WriteLine(ghosts[i].getMode());
+                }
+
+                if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
+                {
+                    if (scatter[i])
+                        ghosts[i].setScatter();
+                    else
+                        ghosts[i].setNormal();
+                }
+
+                   
+                if(ghosts[i].getMode() == Mode.GoOut)
+                {
+                    
+                    if(!isInSquare(ghosts[i].getPosition()))
+                    {
+                        if (scatter[i])
+                            ghosts[i].setScatter();
+                        else
+                            ghosts[i].setNormal();
+                    }
+                } else if(ghosts[i].getMode() == Mode.Normal)
+                {
+                    if (isInSquare(ghosts[i].getPosition()))
+                    {
+                        ghosts[i].setMode(Mode.GoOut);
+                    }
+                }
+
+                ghosts[i].computeNextMove(pacMan, ghosts[0], map);
             }
-                
+            
+           
         }
 
         public void ghostMovement()
@@ -91,6 +151,18 @@ namespace PacMan_CHABRIER_REGNARD
         public bool checkPacman(State state)
         {
             return pacMan.checkMovement(state, map);
+        }
+
+        public Boolean isInSquare(Position pos)
+        {
+            if(pos.getPosX() >= 12 && pos.getPosX() <= 16)
+            {
+                if(pos.getPosY() >= 10 && pos.getPosY() <= 17)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public Map getMap()
@@ -105,8 +177,6 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Ghost getGhost(int i)
         {
-            if (i > 2)
-                i = 0;
             return ghosts[i];
         }
         public void increaseScore()
@@ -116,34 +186,43 @@ namespace PacMan_CHABRIER_REGNARD
 
         private void incrementCounters()
         {
-            if (scatter)
+            for (int i = 0; i < 4; i++)
             {
-                for(int i = 0; i < 3; i++)
+                if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
                 {
-                    countersChanging[i, 0]++;
+                    if (scatter[i])
+                        countersChanging[i, 0]++;
+                    else
+                        countersChanging[i, 1]++;
                 }
-                    
-            } else
-            {
-                for(int i = 0; i < 3; i++)
+                if(ghosts[i].getMode() == Mode.StayIn)
                 {
-                    countersChanging[i, 1]++;
+                    turnToGoOut[i]++;
                 }
             }
+           
+                
+            
         }
 
         private void compareCounters()
         { //TODO refactor so that every ghost is compare to it's scatter independently
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 4; i++)
             {
                 if(countersChanging[i, 0] >= countersFixed[i, 0])
                 {
                     countersChanging[i, 0] = 0;
-                    scatter = false;
+                    scatter[i] = false;
                 } else if(countersChanging[i, 1] >= countersFixed[i, 1])
                 {
                     countersChanging[i, 1] = 0;
-                    scatter = true;
+                    scatter[i] = true;
+                }
+
+                if(turnToGoOut[i] >= ghosts[i].getTurnToGoOut())
+                {
+                    turnToGoOut[i] = 0;
+                    ghosts[i].setMode(Mode.GoOut);
                 }
             }
         }
