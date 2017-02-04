@@ -9,7 +9,7 @@ namespace PacMan_CHABRIER_REGNARD
     {
         private int life;
 
-        public PacMan()
+        public PacMan() : base()
         {
             life = 3;
         }
