@@ -249,10 +249,10 @@ namespace PacMan_CHABRIER_REGNARD
                     }
 
                     game.computeGhosts();
-                    /*if (game.isTouched())// If pacman and ghost enter in colision 
+                    if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
-                    }*/
+                    }
                     if (buffer.getCount() > 0)
                     {
                         if (game.checkPacman(buffer.getHead()))
@@ -323,16 +323,16 @@ namespace PacMan_CHABRIER_REGNARD
                         }
                     } */
 
-                    /*if (game.isTouched())// If pacman and ghost enter in colision 
+                    if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
-                    }*/
+                    }
                     game.ghostMovement(); // We move the ghost
 
-                   /* if (game.isTouched())// If pacman and ghost enter in colision 
+                    if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
-                    }*/
+                    }
 
                     if (!(game.getPacman().getState() == State.Nothing))
                     {
