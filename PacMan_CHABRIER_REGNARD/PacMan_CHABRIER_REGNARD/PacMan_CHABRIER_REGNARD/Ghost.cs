@@ -6,7 +6,7 @@ using System.Text;
 namespace PacMan_CHABRIER_REGNARD
 {
     public enum Aggressivity {aggresive, defensive };
-    public enum Mode {Normal, Scatter};
+    public enum Mode {Normal, Scatter, StayIn, GoOut};
 
     class Ghost : Character
     {
@@ -16,27 +16,28 @@ namespace PacMan_CHABRIER_REGNARD
         protected Mode mode;
         private State nextMove;
         private bool[] intersect;
+        protected int turnToGoOut;
 
         public Ghost()
         {
-            position = new Position(11, 14);
-            target = new Position(0, 0);
+            position = new Position(13, 14);
+            target = new Position(13, 14);
             aggressivity = Aggressivity.aggresive;
             state = State.Nothing;
             nextMove = State.Nothing;
+            mode = Mode.StayIn;
             intersect = new bool[4];
+            turnToGoOut = 150;
             for (int i = 0; i < 4; i++)
                 intersect[i] = true;
         }
 
-        public void computeNextMove(PacMan pac, Map map)
+        public void computeNextMove(PacMan pac, Ghost ghost, Map map)
         {
             resetIntersect();
-            computeTargetTile(pac);
+            computeTargetTile(pac, ghost);
             checkIntersection(map);
             computeState();
-            
-
 
         }
 
@@ -101,11 +102,20 @@ namespace PacMan_CHABRIER_REGNARD
             return (Math.Abs(pos.getPosX() - target.getPosX()) + Math.Abs(pos.getPosY() - target.getPosY()));
         }
 
-        protected virtual void  computeTargetTile(PacMan pac)
+        protected virtual void  computeTargetTile(PacMan pac, Ghost ghost)
         {
             //To override
         }
 
+        public int getTurnToGoOut()
+        {
+            return turnToGoOut;
+        }
+
+        public void setTurnToGoOut(int a)
+        {
+            turnToGoOut = a;
+        }
         private void checkIntersection(Map map)
         {
             Position up, down, left, right;
@@ -177,10 +187,19 @@ namespace PacMan_CHABRIER_REGNARD
         {
             mode = Mode.Scatter;
         }
+        public void setMode(Mode mode)
+        {
+            this.mode = mode;
+        }
 
         public void setNormal()
         {
             mode = Mode.Normal;
+        }
+
+        public Mode getMode()
+        {
+            return mode;
         }
     }
 }
