@@ -1,2 +1,2 @@
 # PacMan
-A little PacMan for a universitary project 
+A little C# PacMan for a universitary project
