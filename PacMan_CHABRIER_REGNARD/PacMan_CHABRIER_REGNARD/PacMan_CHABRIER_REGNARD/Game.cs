@@ -13,6 +13,9 @@ namespace PacMan_CHABRIER_REGNARD
         private int[,] countersFixed;
         private int[,] countersChanging;
         private int[] turnToGoOut;
+        private int[] vulnerabitlitiesFixed;
+        private int[] vulnerabitlitiesChanging;
+
         int score;
         private Boolean[] scatter;
 
@@ -29,14 +32,18 @@ namespace PacMan_CHABRIER_REGNARD
             score = 0;
             countersFixed = new int[4, 2];
             countersChanging = new int[4, 2];
+            vulnerabitlitiesFixed = new int[4];
+            vulnerabitlitiesChanging = new int[4];
             scatter = new Boolean[4];
             turnToGoOut = new int[4];
             for(int i = 0; i < 4; i++)
             {
-                countersFixed[i, 0] = 0;
-                countersFixed[i, 1] = 2000000;
+                countersFixed[i, 0] = 10;
+                countersFixed[i, 1] = 50;
                 countersChanging[i, 0] = 0;
                 countersChanging[i, 1] = 0;
+                vulnerabitlitiesFixed[i] = 175;
+                vulnerabitlitiesChanging[i] = 0;
                 scatter[i] = false;
                 turnToGoOut[i] = 0;
             }
@@ -51,6 +58,9 @@ namespace PacMan_CHABRIER_REGNARD
                 ghosts[i].setMode(Mode.StayIn);
                 ghosts[i].setTurnToGoOut(ghosts[i].getTurnToGoOut() / 2);
                 turnToGoOut[i] = 0;
+                vulnerabitlitiesChanging[i] = 0;
+                countersChanging[i, 0] = 0;
+                countersChanging[i, 1] = 0;
             }
 
             pacMan.getPosition().setPosXY(23, 13);
@@ -75,6 +85,9 @@ namespace PacMan_CHABRIER_REGNARD
                         ghosts[i].setTurnToGoOut(150);
                         ghosts[i].setMode(Mode.StayIn);
                         turnToGoOut[i] = 0;
+                        vulnerabitlitiesChanging[i] = 0;
+                        countersChanging[i, 0] = 0;
+                        countersChanging[i, 1] = 0;
                     }
                 }
             }
@@ -103,11 +116,6 @@ namespace PacMan_CHABRIER_REGNARD
             {
                 incrementCounters();
                 compareCounters();
-
-                if(ghosts[i] is BlueGhost)
-                {
-                    Console.WriteLine(ghosts[i].getMode());
-                }
 
                 if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
                 {
@@ -199,6 +207,11 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     turnToGoOut[i]++;
                 }
+
+                if(ghosts[i].getAggressivity() == Aggressivity.defensive)
+                {
+                    vulnerabitlitiesChanging[i]++;
+                }
             }
            
                 
@@ -206,7 +219,7 @@ namespace PacMan_CHABRIER_REGNARD
         }
 
         private void compareCounters()
-        { //TODO refactor so that every ghost is compare to it's scatter independently
+        { 
             for(int i = 0; i < 4; i++)
             {
                 if(countersChanging[i, 0] >= countersFixed[i, 0])
@@ -223,6 +236,12 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     turnToGoOut[i] = 0;
                     ghosts[i].setMode(Mode.GoOut);
+                }
+
+                if(vulnerabitlitiesChanging[i] >= vulnerabitlitiesFixed[i])
+                {
+                    vulnerabitlitiesChanging[i] = 0;
+                    ghosts[i].setAgresive();
                 }
             }
         }
