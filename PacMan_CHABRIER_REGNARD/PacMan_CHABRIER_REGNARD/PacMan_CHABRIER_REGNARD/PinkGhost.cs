@@ -7,13 +7,24 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class PinkGhost : Ghost
     {
-        protected override void computeTargetTile(PacMan pac)
+
+        public PinkGhost() : base()
+        {
+            turnToGoOut = 30;
+        }
+        protected override void computeTargetTile(PacMan pac, Ghost ghost)
         {
 
             switch (this.mode)
             {
                 case Mode.Scatter:
                     target = new Position(-1, 2);
+                    break;
+                case Mode.StayIn:
+                    target = new Position(14, 14);
+                    break;
+                case Mode.GoOut:
+                    target = new Position(0, 14);
                     break;
                 case Mode.Normal:
                     Position pos = fourAhead(pac.getState(), pac.getPosition());

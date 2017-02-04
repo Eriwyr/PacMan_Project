@@ -7,12 +7,23 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class YellowGhost : Ghost
     {
-        protected override void computeTargetTile(PacMan pac)
+
+        public YellowGhost() : base()
+        {
+            turnToGoOut = 500;
+        }
+        protected override void computeTargetTile(PacMan pac, Ghost ghost)
         {
             switch (this.mode)
             {
                 case Mode.Scatter:
                     target = new Position(32, 0);
+                    break;
+                case Mode.StayIn:
+                    target = new Position(14, 14);
+                    break;
+                case Mode.GoOut:
+                    target = new Position(0, 14);
                     break;
                 case Mode.Normal:
                     int distance = manhattanDistance(pac.getPosition(), this.getPosition());
