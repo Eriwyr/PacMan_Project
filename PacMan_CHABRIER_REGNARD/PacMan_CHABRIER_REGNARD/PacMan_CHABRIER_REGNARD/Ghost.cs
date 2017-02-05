@@ -17,6 +17,7 @@ namespace PacMan_CHABRIER_REGNARD
         private State nextMove;
         private bool[] intersect;
         protected int turnToGoOut;
+        private bool hasChanged = false;
 
         public Ghost()
         {
@@ -34,11 +35,82 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void computeNextMove(PacMan pac, Ghost ghost, Map map)
         {
+            
             resetIntersect();
-            computeTargetTile(pac, ghost);
-            checkIntersection(map);
-            computeState();
+            if (this.aggressivity == Aggressivity.aggresive)
+            {
+                computeTargetTile(pac, ghost);
+                checkIntersection(map);
+                computeState();
+            } else
+            {
+                computeAwayTile(pac, map);
+                checkIntersection(map);
+                reverse();
 
+            }
+            
+            
+
+        }
+
+        private void reverse()
+        {
+            if (this.state != State.Nothing)
+            {
+                if (hasChanged)
+                {
+                    hasChanged = false;
+                    int inv = (int)this.state;
+                    inv += 2;
+                    inv %= 4;
+                    intersect[inv] = true;
+
+                    for(int i = 0; i < 4; i++)
+                    {
+                        if( i != inv)
+                        {
+                            intersect[i] = false;
+                        }
+                    }
+
+                    this.state = (State)inv;
+
+                } else
+                {
+                    computeState();
+                }
+                
+
+            }
+        }
+
+        public void setHasChanged(bool b)
+        {
+            hasChanged = b;
+        }
+
+        private void computeAwayTile(PacMan pac, Map map)
+        {
+            double distance = 0;
+            double dist;
+            Position pacPos = pac.getPosition();
+            Position ret = new Position(0, 0);
+            for(int i = 0; i < map.getVX();i++)
+            {
+                for(int j = 0; j < map.getVY(); j++)
+                {
+                    Position tmp = new Position(i, j);
+                    dist = euclidianDistance(pacPos, tmp);
+                    if( dist >= distance)
+                    {
+                        distance = dist;
+                        ret.setPosXY(tmp.getPosX(), tmp.getPosY());
+                    }
+                }
+            }
+
+            target = ret;
         }
 
         private void resetIntersect()
@@ -61,19 +133,20 @@ namespace PacMan_CHABRIER_REGNARD
         private State selectIntersect()
         {
 
-            if(this.state != State.Nothing)
+            if(this.state != State.Nothing && this.mode != Mode.GoOut)
             {
-                int inv = (int)this.state;
-                inv += 2;
-                inv %= 4;
-                intersect[inv] = false;
+                    int inv = (int)this.state;
+                    inv += 2;
+                    inv %= 4;
+                    intersect[inv] = false;
+                
             }
             
             Position tmp = new Position(0, 0);
             //State inverse = (State)(inv);
             
-            int distance = 100000;
-            int manhattan = 0;
+            double distance = 100000;
+            double dist = 0;
             int j = 0;
             bool changed = false;
             for(int i = 0; i < 4; i++)
@@ -81,10 +154,10 @@ namespace PacMan_CHABRIER_REGNARD
                 if (intersect[i])
                 {
                     tmp = nextTile((State)i);
-                    manhattan = manhattanDistance(target, tmp);
-                    if ( manhattan < distance)
+                    dist = euclidianDistance(target, tmp);
+                    if ( dist < distance)
                     {
-                        distance = manhattan;
+                        distance = dist;
                         j = i;
                         changed = true;
                     }
@@ -100,6 +173,13 @@ namespace PacMan_CHABRIER_REGNARD
         protected int manhattanDistance(Position taget, Position pos)
         {
             return (Math.Abs(pos.getPosX() - target.getPosX()) + Math.Abs(pos.getPosY() - target.getPosY()));
+        }
+
+        protected double euclidianDistance(Position target, Position pos)
+        {
+            double a = Math.Pow(target.getPosX() - pos.getPosX(), 2);
+            double b = Math.Pow(target.getPosY() - pos.getPosY(), 2);
+            return Math.Sqrt(a + b);
         }
 
         protected virtual void  computeTargetTile(PacMan pac, Ghost ghost)
