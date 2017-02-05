@@ -10,7 +10,8 @@ namespace PacMan_CHABRIER_REGNARD
 
         public RedGhost() : base()
         {
-            this.mode = Mode.GoOut;
+            this.mode = Mode.Normal;
+            this.position = new Position(11, 14);
             turnToGoOut = 0;
         }
 
@@ -25,13 +26,12 @@ namespace PacMan_CHABRIER_REGNARD
                     target = new Position(14, 14);
                     break;
                 case Mode.GoOut:
-                    target = new Position(12, 0);
+                    target = new Position(0, 13);
                     break;
                 case Mode.Normal:
                     this.target = new Position(pac.getPosition().getPosX(), pac.getPosition().getPosY());
                     break;
             }
-            
         }
     }
 }
