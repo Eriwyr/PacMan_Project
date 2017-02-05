@@ -46,7 +46,6 @@ namespace PacMan_CHABRIER_REGNARD
         int change;
         int changeDead;
         int ghostDefensiveTime;
-        int[,] counters;
         int score;
         bool pacManIsDead;
         State stateDisplay;
@@ -69,12 +68,7 @@ namespace PacMan_CHABRIER_REGNARD
             buffer = new BufferInput();
             gameState = GameState.playing;
             ghosts = new AnimatedObject[4];
-            counters = new int[3, 2];
-            for (int i = 0; i < 3; i++)
-            {
-                counters[i, 0] = 0;
-                counters[i, 1] = 0;
-            }
+            
         }
 
         /// <summary>
@@ -323,7 +317,7 @@ namespace PacMan_CHABRIER_REGNARD
                         game.pacmanMovement(State.Nothing);
                     }
 
-                    for(int i = 0;i < 4; i++)
+                    for(int i = 0;i < ghosts.Length; i++)
                     {
                         if(game.getGhost(i).getAggressivity() == Aggressivity.defensive)
                         {
@@ -334,46 +328,7 @@ namespace PacMan_CHABRIER_REGNARD
                         }
                     }
 
-                    /*for (int i = 0; i < 4; i++)
-                    {
-                        if (game.getGhost(i).getAggressivity() == Aggressivity.defensive) // If pacman eat bigBean
-                        {
-                            if (ghostDefensiveTime == 2500)//We make ghost vulnerable during a time
-                            {
-                                ghostDefensiveTime = 0;
-                                game.getGhost(i).setAgresive();
-                                redghost.setTexture(Content.Load<Texture2D>("redghost"));//we reset orginial texture
-                                pinkghost.setTexture(Content.Load<Texture2D>("pinkghost"));//we reset orginial texture
-                                yellowghost.setTexture(Content.Load<Texture2D>("yellowghost"));//we reset orginial texture
-                                blueghost.setTexture(Content.Load<Texture2D>("blueghost"));//we reset orginial texture
-                            }
-                            else
-                            {// if ghost is vulnerabel, we set his sprite to afraidGhost
-                                if (ghostDefensiveTime % 2 == 0)
-                                {
-                                    redghost.setTexture(Content.Load<Texture2D>("affraid0"));
-                                    pinkghost.setTexture(Content.Load<Texture2D>("affraid0"));
-                                    yellowghost.setTexture(Content.Load<Texture2D>("affraid0"));
-                                    blueghost.setTexture(Content.Load<Texture2D>("affraid0"));
-                                }
-                                else
-                                {
-                                    redghost.setTexture(Content.Load<Texture2D>("affraid1"));
-                                    pinkghost.setTexture(Content.Load<Texture2D>("affraid1"));
-                                    yellowghost.setTexture(Content.Load<Texture2D>("affraid1"));
-                                    blueghost.setTexture(Content.Load<Texture2D>("affraid1"));
-                                }
-
-                                ghostDefensiveTime++;//We increment the time
-                            }
-                        } else
-                        {
-                            redghost.setTexture(Content.Load<Texture2D>("redghost"));//we reset orginial texture
-                            pinkghost.setTexture(Content.Load<Texture2D>("pinkghost"));//we reset orginial texture
-                            yellowghost.setTexture(Content.Load<Texture2D>("yellowghost"));//we reset orginial texture
-                            blueghost.setTexture(Content.Load<Texture2D>("blueghost"));//we reset orginial texture
-                        }
-                    } */
+                    
 
                     if (game.isTouched())// If pacman and ghost enter in colision 
                     {
@@ -423,14 +378,6 @@ namespace PacMan_CHABRIER_REGNARD
                 ghosts[i].setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
             }
 
-            /*tmpPos = new Position(game.getGhost(0).getPosition().getPosX(), game.getGhost(0).getPosition().getPosY());
-            redghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
-            tmpPos = new Position(game.getGhost(1).getPosition().getPosX(), game.getGhost(1).getPosition().getPosY());
-            pinkghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
-            tmpPos = new Position(game.getGhost(2).getPosition().getPosX(), game.getGhost(2).getPosition().getPosY());
-            yellowghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));
-            tmpPos = new Position(game.getGhost(3).getPosition().getPosX(), game.getGhost(3).getPosition().getPosY());
-            blueghost.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20));*/
         }
 
         /// <summary>
@@ -493,10 +440,7 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     spriteBatch.Draw(ghosts[i].getTexture(), ghosts[i].getPos(), Color.White);
                 }
-                /*spriteBatch.Draw(redghost.getTexture(), redghost.getPos(), Color.White);
-                spriteBatch.Draw(pinkghost.getTexture(), pinkghost.getPos(), Color.White);
-                spriteBatch.Draw(yellowghost.getTexture(), yellowghost.getPos(), Color.White);
-                spriteBatch.Draw(blueghost.getTexture(), blueghost.getPos(), Color.White);*/
+                
             }
 
             // this being the line that answers your question
