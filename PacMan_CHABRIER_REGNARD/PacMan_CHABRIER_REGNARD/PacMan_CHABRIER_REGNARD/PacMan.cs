@@ -8,6 +8,7 @@ namespace PacMan_CHABRIER_REGNARD
     class PacMan : Character
     {
         private int life;
+        private bool hasWon = false;
 
         public PacMan() : base()
         {
@@ -22,6 +23,16 @@ namespace PacMan_CHABRIER_REGNARD
         public void loseLife()
         {
             life--;
+        }
+
+        public bool won()
+        {
+            return hasWon;
+        }
+
+        public void win()
+        {
+            hasWon = true;
         }
     }
 

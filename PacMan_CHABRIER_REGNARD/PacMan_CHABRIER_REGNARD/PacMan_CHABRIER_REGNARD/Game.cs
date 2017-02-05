@@ -24,7 +24,14 @@ namespace PacMan_CHABRIER_REGNARD
 
         public Game()
         {
+            restart();
+            
+        }
+
+        public void restart()
+        {
             map = new Map();
+            map.countBeans();
             pacMan = new PacMan();
             ghosts = new Ghost[4];
             ghosts[0] = new RedGhost();
@@ -40,7 +47,7 @@ namespace PacMan_CHABRIER_REGNARD
             vulnerabitlitiesChanging = new int[4];
             scatter = new Boolean[4];
             turnToGoOut = new int[4];
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 countersFixed[i, 0] = 20;
                 countersFixed[i, 1] = 50;
@@ -51,7 +58,6 @@ namespace PacMan_CHABRIER_REGNARD
                 scatter[i] = false;
                 turnToGoOut[i] = 0;
             }
-            
         }
 
         public void reset()
@@ -165,6 +171,18 @@ namespace PacMan_CHABRIER_REGNARD
             }
             
            
+        }
+
+        public bool isFinished()
+        {
+            if(pacMan.getLife() <= 0)
+            {
+                return true;
+            } else if(map.getNbBeans() == 0) {
+                pacMan.win();
+                return true;
+            }
+            return false; 
         }
 
         public void ghostMovement()

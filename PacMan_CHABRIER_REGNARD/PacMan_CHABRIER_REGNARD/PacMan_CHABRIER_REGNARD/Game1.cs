@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    enum GameState { playing, relaunch }
+    enum GameState { playing, relaunch, finished }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
@@ -24,6 +24,7 @@ namespace PacMan_CHABRIER_REGNARD
         AnimatedObject bigBean;
         AnimatedObject pacMan;
         AnimatedObject[] ghosts;
+        AnimatedObject gameover;
         SpriteFont font;
         Vector2 fontPosLife;
         Vector2 fontPosScore;
@@ -35,10 +36,6 @@ namespace PacMan_CHABRIER_REGNARD
         SoundEffect death;
         SoundEffectInstance siren1;
         SoundEffectInstance invicible1;
-        /*AnimatedObject redghost;
-        AnimatedObject pinkghost;
-        AnimatedObject yellowghost;
-        AnimatedObject blueghost;*/
         BufferInput buffer;
         KeyboardState oldState;
         GameState gameState;
@@ -50,6 +47,7 @@ namespace PacMan_CHABRIER_REGNARD
         bool pacManIsDead;
         State stateDisplay;
         Game game;
+        public bool restart;
 
         private const int VX = 31;
         private const int VY = 28;
@@ -104,6 +102,7 @@ namespace PacMan_CHABRIER_REGNARD
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             bigBean = new AnimatedObject(Content.Load<Texture2D>("gros_bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
+            gameover = new AnimatedObject(Content.Load<Texture2D>("gameover"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[0] = new AnimatedObject(Content.Load<Texture2D>("redghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[1] = new AnimatedObject(Content.Load<Texture2D>("pinkghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[2] = new AnimatedObject(Content.Load<Texture2D>("yellowghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
@@ -204,14 +203,19 @@ namespace PacMan_CHABRIER_REGNARD
                         case 5:
                             changeDead = 0;
                             game.reset();
+                            pacMan.setTexture(Content.Load<Texture2D>("pacman"));
                             gameState = GameState.playing;// We launch the game again
                             break;
                     }
                 }
             }
-            else // if pacman is not dead
+            else if (gameState == GameState.playing)// if pacman is not dead
             {
-
+                if (game.isFinished())
+                {
+                    gameState = GameState.finished;
+                    return;
+                }
                 if (game.getGamePlay() == GamePlay.Hungry)
                 {
                     siren1.Stop();
@@ -290,7 +294,7 @@ namespace PacMan_CHABRIER_REGNARD
 
                     }
 
-                    game.computeGhosts();
+                    
                     if (game.isTouched())// If pacman and ghost enter in colision 
                     {
                         gameState = GameState.relaunch;// We change the game state
@@ -317,7 +321,8 @@ namespace PacMan_CHABRIER_REGNARD
                         game.pacmanMovement(State.Nothing);
                     }
 
-                    for(int i = 0;i < ghosts.Length; i++)
+                    game.computeGhosts();
+                    for (int i = 0;i < ghosts.Length; i++)
                     {
                         if(game.getGhost(i).getAggressivity() == Aggressivity.defensive)
                         {
@@ -360,6 +365,19 @@ namespace PacMan_CHABRIER_REGNARD
                 updateViews();
                 base.Update(gameTime);
 
+            } else if (gameState == GameState.finished)
+            {
+                KeyboardState keyboard = Keyboard.GetState();
+                if (keyboard.IsKeyDown(Keys.Space))
+                {
+                    game.restart();
+                    timer = 0;
+                    pacMan.setTexture(Content.Load<Texture2D>("pacman"));
+                    updateViews();
+                    gameState = GameState.playing;
+                }
+                   
+                base.Update(gameTime);
             }
 
 
@@ -391,82 +409,105 @@ namespace PacMan_CHABRIER_REGNARD
             Position tmppos;
             int x = 0;
             int y = 0;
-            for (x = 0; x < VX; x++)
+
+            if(gameState != GameState.finished)
             {
-                for (y = 0; y < VY; y++)
+                for (x = 0; x < VX; x++)
                 {
-                    tmppos = new Position(x, y);
-
-                    if (game.getMap().checkElement(tmppos) == Element.Wall)
+                    for (y = 0; y < VY; y++)
                     {
-                        int xpos, ypos;
-                        xpos = x * 20;
-                        ypos = y * 20;
-                        Vector2 pos = new Vector2(ypos, xpos);
+                        tmppos = new Position(x, y);
 
-                        spriteBatch.Draw(wall.getTexture(), pos, Color.White);
+                        if (game.getMap().checkElement(tmppos) == Element.Wall)
+                        {
+                            int xpos, ypos;
+                            xpos = x * 20;
+                            ypos = y * 20;
+                            Vector2 pos = new Vector2(ypos, xpos);
 
-                    }
+                            spriteBatch.Draw(wall.getTexture(), pos, Color.White);
 
-                    if (game.getMap().checkElement(tmppos) == Element.Beans)
-                    {
-                        int xpos, ypos;
-                        xpos = x * 20;
-                        ypos = y * 20;
-                        Vector2 pos = new Vector2(ypos, xpos);
+                        }
 
-                        spriteBatch.Draw(bean.getTexture(), pos, Color.White);
-                    }
+                        if (game.getMap().checkElement(tmppos) == Element.Beans)
+                        {
+                            int xpos, ypos;
+                            xpos = x * 20;
+                            ypos = y * 20;
+                            Vector2 pos = new Vector2(ypos, xpos);
 
-                    if (game.getMap().checkElement(tmppos) == Element.BigBeans)
-                    {
-                        int xpos, ypos;
-                        xpos = x * 20;
-                        ypos = y * 20;
-                        Vector2 pos = new Vector2(ypos, xpos);
+                            spriteBatch.Draw(bean.getTexture(), pos, Color.White);
+                        }
 
-                        spriteBatch.Draw(bigBean.getTexture(), pos, Color.White);
+                        if (game.getMap().checkElement(tmppos) == Element.BigBeans)
+                        {
+                            int xpos, ypos;
+                            xpos = x * 20;
+                            ypos = y * 20;
+                            Vector2 pos = new Vector2(ypos, xpos);
+
+                            spriteBatch.Draw(bigBean.getTexture(), pos, Color.White);
+                        }
                     }
                 }
-            }
 
 
 
-            spriteBatch.Draw(pacMan.getTexture(), pacMan.getPos(), Color.White);
+                spriteBatch.Draw(pacMan.getTexture(), pacMan.getPos(), Color.White);
 
-            if (gameState == GameState.playing) // If pacman is dead we dont display ghosts during this time 
-            {
-                for(int i = 0; i < ghosts.Length; i++)
+                if (gameState == GameState.playing) // If pacman is dead we dont display ghosts during this time 
                 {
-                    spriteBatch.Draw(ghosts[i].getTexture(), ghosts[i].getPos(), Color.White);
+                    for (int i = 0; i < ghosts.Length; i++)
+                    {
+                        spriteBatch.Draw(ghosts[i].getTexture(), ghosts[i].getPos(), Color.White);
+                    }
+
                 }
-                
+
+                Vector2 fontOrigin = font.MeasureString(game.getPacman().getLife().ToString()) / 2;
+                spriteBatch.DrawString(font, "Life : " + game.getPacman().getLife().ToString(), fontPosLife, Color.Yellow, 0, fontOrigin, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
+
+                if (game.getPacman().getScore() == (score + 10)) //If pacman eat pellet we play the pellet sounds
+                {
+                    score += 10;
+                    if (change % 2 == 0)
+                    {
+                        pelletEat1.Play();
+                    }
+                    else
+                    {
+                        pelletEat2.Play();
+                    }
+                }
+                if (game.getPacman().getScore() == (score + 200))
+                {
+                    score += 200;
+                    invicible.Play();
+                }
+                Vector2 fontOrigin2 = font.MeasureString(game.getPacman().getScore().ToString()) / 2;
+                spriteBatch.DrawString(font, "Score : " + game.getPacman().getScore().ToString(), fontPosScore, Color.Yellow, 0, fontOrigin2, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
+
+            } else
+            {
+
+                Vector2 pos = new Vector2(380, 200);
+                if (game.getPacman().won())
+                {
+                    spriteBatch.DrawString(font, "Well Done !", pos, Color.White);
+                } else
+                {
+                    spriteBatch.DrawString(font, "Game Over !", pos, Color.White);
+
+                }
+
+                pos.X = 300;
+                pos.Y = 300;
+                spriteBatch.DrawString(font, "Press spacebar to restart", pos, Color.White);
             }
+
 
             // this being the line that answers your question
 
-            Vector2 fontOrigin = font.MeasureString(game.getPacman().getLife().ToString()) / 2;
-            spriteBatch.DrawString(font,"Life : "+ game.getPacman().getLife().ToString(), fontPosLife, Color.Yellow,0, fontOrigin, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
-
-            if (game.getPacman().getScore() == (score + 10)) //If pacman eat pellet we play the pellet sounds
-            {   
-                score += 10;
-                if(change%2 == 0)
-                {
-                    pelletEat1.Play();
-                }
-                else
-                {
-                    pelletEat2.Play();
-                }
-            }
-            if(game.getPacman().getScore() == (score + 200))
-            {
-                score += 200;
-                invicible.Play();
-            }
-            Vector2 fontOrigin2 = font.MeasureString(game.getPacman().getScore().ToString()) / 2;
-            spriteBatch.DrawString(font, "Score : " + game.getPacman().getScore().ToString(), fontPosScore, Color.Yellow, 0, fontOrigin2, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
 
             base.Draw(gameTime);
             spriteBatch.End();

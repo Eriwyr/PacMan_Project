@@ -45,6 +45,11 @@ namespace PacMan_CHABRIER_REGNARD
                             }
                             if (map.checkElement(posTemp) == Element.Beans)
                                 score += 10;
+
+                            if(map.checkElement(posTemp) < Element.Nothing)
+                            {
+                                map.removeBean();
+                            }
                             map.setElement(posTemp, Element.Nothing);
                         }
 
@@ -72,6 +77,11 @@ namespace PacMan_CHABRIER_REGNARD
                             }
                             if (map.checkElement(posTemp) == Element.Beans)
                                 score += 10;
+
+                            if (map.checkElement(posTemp) < Element.Nothing)
+                            {
+                                map.removeBean();
+                            }
                             map.setElement(posTemp, Element.Nothing);
                         }
                     }
@@ -98,6 +108,11 @@ namespace PacMan_CHABRIER_REGNARD
                             }
                             if (map.checkElement(posTemp) == Element.Beans)
                                 score += 10;
+
+                            if (map.checkElement(posTemp) < Element.Nothing)
+                            {
+                                map.removeBean();
+                            }
                             map.setElement(posTemp, Element.Nothing);
                         }
 
@@ -126,6 +141,11 @@ namespace PacMan_CHABRIER_REGNARD
                                 
                             if (map.checkElement(posTemp) == Element.Beans)
                                 score += 10;
+
+                            if (map.checkElement(posTemp) < Element.Nothing)
+                            {
+                                map.removeBean();
+                            }
                             map.setElement(posTemp, Element.Nothing);
                         }
                     }
@@ -147,6 +167,13 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     if (map.checkElement(posTemp) == Element.BigBeans)
                         chase = true;
+
+                    if (map.checkElement(posTemp) < Element.Nothing)
+                    {
+                        map.removeBean();
+                    }
+
+
                     if (map.checkElement(position) != Element.Nothing)
                         map.setElement(position, Element.Nothing);
                 }
@@ -161,6 +188,11 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     if (map.checkElement(posTemp) == Element.BigBeans)
                         chase = true;
+
+                    if (map.checkElement(posTemp) < Element.Nothing)
+                    {
+                        map.removeBean();
+                    }
                     if (map.checkElement(position) != Element.Nothing)
                         map.setElement(position, Element.Nothing);
                 }

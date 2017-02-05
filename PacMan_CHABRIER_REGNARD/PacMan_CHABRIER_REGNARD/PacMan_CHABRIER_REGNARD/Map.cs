@@ -12,6 +12,7 @@ namespace PacMan_CHABRIER_REGNARD
         private byte[,] grid;
         private const int VX = 31; 
         private const int VY = 28;
+        private int nbBeans = 0;
 
 
         public Map()
@@ -80,6 +81,32 @@ namespace PacMan_CHABRIER_REGNARD
         public int getVY()
         {
             return VY;
+        }
+
+        public void countBeans()
+        {
+            
+            for(int i = 0; i < VX; i++)
+            {
+                for(int j = 0; j < VY; j++)
+                {
+                    Element elmt = this.checkElement(new Position(i, j));
+                    if (elmt > Element.Wall && elmt < Element.Nothing)
+                    {
+                        nbBeans++;
+                    }
+                }
+            }
+        }
+
+        public void removeBean()
+        {
+            nbBeans--;
+        }
+
+         public int getNbBeans()
+        {
+            return nbBeans;
         }
 
     }
