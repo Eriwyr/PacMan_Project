@@ -42,7 +42,7 @@ namespace PacMan_CHABRIER_REGNARD
             turnToGoOut = new int[4];
             for(int i = 0; i < 4; i++)
             {
-                countersFixed[i, 0] = 10;
+                countersFixed[i, 0] = 20;
                 countersFixed[i, 1] = 50;
                 countersChanging[i, 0] = 0;
                 countersChanging[i, 1] = 0;
@@ -97,7 +97,7 @@ namespace PacMan_CHABRIER_REGNARD
                         hasEaten = true;
                         ghosts[i].getPosition().setPosXY(13, 14);
                         ghosts[i].setAgresive();
-                        ghosts[i].setTurnToGoOut(150);
+                        ghosts[i].setTurnToGoOut(200);
                         ghosts[i].setMode(Mode.StayIn);
                         turnToGoOut[i] = 0;
                         vulnerabitlitiesChanging[i] = 0;
@@ -114,9 +114,10 @@ namespace PacMan_CHABRIER_REGNARD
             
             if(pacMan.movement(state, map) == true)
             {
-                for(int i = 0; i < 4; i++)
+                for(int i = 0; i < ghosts.Length; i++)
                 {
                     ghosts[i].setDefensive();
+                    ghosts[i].setHasChanged(true);
                     
                 }
             } else
@@ -210,7 +211,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         private void incrementCounters()
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < ghosts.Length; i++)
             {
                 if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
                 {
@@ -236,7 +237,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         private void compareCounters()
         { 
-            for(int i = 0; i < 4; i++)
+            for(int i = 0; i < ghosts.Length; i++)
             {
                 if(countersChanging[i, 0] >= countersFixed[i, 0])
                 {
