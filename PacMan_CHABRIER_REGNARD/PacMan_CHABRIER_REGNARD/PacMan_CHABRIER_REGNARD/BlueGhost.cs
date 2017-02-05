@@ -10,7 +10,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public BlueGhost() : base()
         {
-            turnToGoOut = 50;
+            turnToGoOut = 100;
         }
         protected override void computeTargetTile(PacMan pac, Ghost ghost)
         {
