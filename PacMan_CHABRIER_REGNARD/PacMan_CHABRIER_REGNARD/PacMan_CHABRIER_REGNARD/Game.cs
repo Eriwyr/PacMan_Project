@@ -5,21 +5,26 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {   enum GamePlay {Normal, Hungry}
+    
+    //Main class of the game
     class Game
     {
+        //We store every element mandatory for the game
         private Map map;
         private PacMan pacMan;
         private Ghost[] ghosts;
         private GamePlay gamePlay;
         private bool hasEaten;
-        private int[,] countersFixed;
-        private int[,] countersChanging;
-        private int[] turnToGoOut;
-        private int[] vulnerabitlitiesFixed;
-        private int[] vulnerabitlitiesChanging;
+
+        //Definition of counters to keep track of every modes possible for the ghosts
+        private int[,] countersFixed;// This contain the number of time to Scatter mode and Normal mode
+        private int[,] countersChanging; //This contain the actual timer of scatter mode and normal mode
+        private int[] turnToGoOut; //Actual timer of the time before getting out of the starting square
+        private int[] vulnerabitlitiesFixed; //How much time can ghosts be vulnerable
+        private int[] vulnerabitlitiesChanging; //How much time the ghosts have been vulnerable so far
 
         int score;
-        private Boolean[] scatter;
+        private Boolean[] scatter; //Wether or not the ghosts are in scatter mode
 
 
         public Game()
@@ -28,10 +33,11 @@ namespace PacMan_CHABRIER_REGNARD
             
         }
 
+        //Initialize every items
         public void restart()
         {
             map = new Map();
-            map.countBeans();
+            map.countBeans(); //We count the number of beans on the map only once so we can check more quickly afterward.
             pacMan = new PacMan();
             ghosts = new Ghost[4];
             ghosts[0] = new RedGhost();
@@ -60,6 +66,7 @@ namespace PacMan_CHABRIER_REGNARD
             }
         }
 
+        //When we died this function is called to reset everything
         public void reset()
         {
             for(int i = 0; i < ghosts.Length; i++)
@@ -94,12 +101,14 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     if (ghosts[i].getAggressivity() == Aggressivity.aggresive)
                     {
-                        
+                        //If the pacman is eaten by one of the ghosts
                         pacMan.loseLife();
-                        return true;    //pacMan.getPosition().setPosXY(17, 14);
+                        return true;
                     }
-                    else // if pacman can eat ghost, we teleport the ghost in the spawn
+                    else 
                     {
+                        //If the pacman eats a ghost, we send it to the starting square
+                        //And we reset all of its counters;
                         hasEaten = true;
                         ghosts[i].getPosition().setPosXY(13, 14);
                         ghosts[i].setAgresive();
@@ -116,44 +125,47 @@ namespace PacMan_CHABRIER_REGNARD
         }
         public void pacmanMovement(State state)
         {
-
+            //Execute the movement of the pacman
             
             if(pacMan.movement(state, map) == true)
             {
+                //If we ate a big bean then the ghosts change their states
                 for(int i = 0; i < ghosts.Length; i++)
                 {
                     ghosts[i].setDefensive();
                     ghosts[i].setHasChanged(true);
                     
                 }
-            } else
-            {
-                
-            }
+            } 
         }
 
         public void computeGhosts()
         {
+            //Prepare ghosts movements
 
-            for(int i = 0; i < ghosts.Length; i++)
+            for(int i = 0; i < ghosts.Length; i++) //Foreach ghpsts
             {
-                incrementCounters();
-                compareCounters();
+                incrementCounters(); //We increment the counters
+                compareCounters(); //We verify each counters
 
                 if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
                 {
+                    //If we are not in the square
+
+                    //We set Scatter mode accordingly to the booleans
                     if (scatter[i])
                         ghosts[i].setScatter();
                     else
                         ghosts[i].setNormal();
                 }
 
-                   
+                //If the ghost is trying to go out of the square
                 if(ghosts[i].getMode() == Mode.GoOut)
                 {
-                    
-                    if(!isInSquare(ghosts[i].getPosition()))
+                    //If it's not in the square anymore
+                    if(!isInSquare(ghosts[i].getPosition())) 
                     {
+                        //We reset to the mode it was before entering the square
                         if (scatter[i])
                             ghosts[i].setScatter();
                         else
@@ -163,39 +175,47 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     if (isInSquare(ghosts[i].getPosition()))
                     {
+                        //If the ghost accidently enters the square then
+                        //we force it to go out
                         ghosts[i].setMode(Mode.GoOut);
                     }
                 }
-
+                //We calculate the next move of the ghosts
+                //One ghost is send in param because some ghosts use it to
+                //computes their target tiles.
                 ghosts[i].computeNextMove(pacMan, ghosts[0], map);
             }
             
            
         }
 
+        //Will check if the game has ended
         public bool isFinished()
         {
-            if(pacMan.getLife() <= 0)
+            if(pacMan.getLife() <= 0) //If we don't have lives anymore
             {
-                return true;
-            } else if(map.getNbBeans() == 0) {
-                pacMan.win();
-                return true;
+                return true; //We stop the game
+            } else if(map.getNbBeans() == 0) { //If every beans on the map was eaten
+                pacMan.win(); //The pacman win the game
+                return true;//We stop the game
             }
             return false; 
         }
 
-        public void ghostMovement()
+        public void ghostMovement() //Execute the movement of each ghosts
         {
             foreach(Ghost ghost in ghosts)
                 ghost.movement(ghost.getNextMove(), map);
         }
 
+        //We check if the movement of the pacman will be possible
+        //(will help to manage inputs)
         public bool checkPacman(State state)
         {
             return pacMan.checkMovement(state, map);
         }
 
+        //Check if the position pos is in the starting square of the ghosts
         public Boolean isInSquare(Position pos)
         {
             if(pos.getPosX() >= 12 && pos.getPosX() <= 16)
@@ -229,23 +249,26 @@ namespace PacMan_CHABRIER_REGNARD
 
         private void incrementCounters()
         {
+            //For each ghosts
             for (int i = 0; i < ghosts.Length; i++)
             {
                 if (ghosts[i].getMode() != Mode.StayIn && ghosts[i].getMode() != Mode.GoOut)
                 {
-                    if (scatter[i])
-                        countersChanging[i, 0]++;
+                    //If we are not in the square
+                    
+                    if (scatter[i]) //If we were in scatter mode
+                        countersChanging[i, 0]++; //We keep track of how much time the ghost has been in scatter
                     else
-                        countersChanging[i, 1]++;
+                        countersChanging[i, 1]++; //We keep track of how much time the ghost has been in normal
                 }
-                if(ghosts[i].getMode() == Mode.StayIn)
+                if(ghosts[i].getMode() == Mode.StayIn) //If the ghost stayed in the square
                 {
-                    turnToGoOut[i]++;
+                    turnToGoOut[i]++;//We increment the time before going out
                 }
 
                 if(ghosts[i].getAggressivity() == Aggressivity.defensive)
                 {
-                    vulnerabitlitiesChanging[i]++;
+                    vulnerabitlitiesChanging[i]++; //If the ghost was chased, we increment this counter
                 }
             }
            
@@ -255,28 +278,32 @@ namespace PacMan_CHABRIER_REGNARD
 
         private void compareCounters()
         { 
+            //Will make the changement between the differents mode according to timers
             for(int i = 0; i < ghosts.Length; i++)
             {
                 if(countersChanging[i, 0] >= countersFixed[i, 0])
-                {
-                    countersChanging[i, 0] = 0;
-                    scatter[i] = false;
+                { //If we were in scatter for enough time
+                    countersChanging[i, 0] = 0; //We reset the timer
+                    scatter[i] = false; //We are not in scatter anymore
                 } else if(countersChanging[i, 1] >= countersFixed[i, 1])
                 {
-                    countersChanging[i, 1] = 0;
-                    scatter[i] = true;
+                    //If we were in normal mode for enough time
+                    countersChanging[i, 1] = 0; //We reset the timer
+                    scatter[i] = true; //We go in scatter mode
                 }
 
                 if(turnToGoOut[i] >= ghosts[i].getTurnToGoOut())
                 {
+                    //If the ghost stayed in the square enough
                     turnToGoOut[i] = 0;
-                    ghosts[i].setMode(Mode.GoOut);
+                    ghosts[i].setMode(Mode.GoOut); //We make it go out
                 }
 
                 if(vulnerabitlitiesChanging[i] >= vulnerabitlitiesFixed[i])
                 {
+                    //If the ghost was vulnerable for enough time
                     vulnerabitlitiesChanging[i] = 0;
-                    ghosts[i].setAgresive();
+                    ghosts[i].setAgresive(); //We switch to chasing mode
                 }
             }
         }

@@ -5,7 +5,14 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
-    public enum State {Up,Left,Down,Right,Nothing, Wait, Quit};
+    //Enumeration to know the state of the character
+
+    public enum State {
+        Up,Left,Down,Right, //The four directions possible
+        Nothing, //Keeping the same direction
+        Wait, //Stop every movements
+        Quit //Exit the game
+    };
 
     class Character
     {
@@ -19,25 +26,32 @@ namespace PacMan_CHABRIER_REGNARD
             score = 0;
         }
 
+
+        //This will make the character move
         public Boolean movement(State state, Map map)
         {
             Position posTemp = new Position(position.getPosX(),position.getPosY());
             Boolean chase = false;
             switch (state)
             {
-                case State.Nothing:
+                case State.Nothing: //We call again the function with the same state as before
                     return movement(this.state, map);
+
 
                 case State.Up:
                     posTemp.setPosX(posTemp.getPosX() - 1);
 
+
+                    //If there is no wall on the next position
                     if (map.checkElement(posTemp) > Element.Wall)
                     {
                         position = posTemp;
                         this.state = state;
 
+                        //If the pacman is calling the function
                         if ( this is PacMan)
                         {
+
                             if (map.checkElement(posTemp) == Element.BigBeans)
                             {
                                 score += 200;
@@ -48,6 +62,7 @@ namespace PacMan_CHABRIER_REGNARD
 
                             if(map.checkElement(posTemp) < Element.Nothing)
                             {
+                                //We remove beans from the map
                                 map.removeBean();
                             }
                             map.setElement(posTemp, Element.Nothing);
@@ -62,6 +77,7 @@ namespace PacMan_CHABRIER_REGNARD
 
                     break;
 
+                //Same steps for every directions
                 case State.Down:
                     posTemp.setPosX(posTemp.getPosX() + 1);
                     if (map.checkElement(posTemp) > Element.Wall)
@@ -158,6 +174,7 @@ namespace PacMan_CHABRIER_REGNARD
                     break;
             }
 
+            //If we are on the teleporters then we change to the other teleporter
             if (position.equals(map.getTP1()) && this.state == State.Left)
             {
                 position.setPosX(map.getTP2().getPosX());
@@ -202,13 +219,14 @@ namespace PacMan_CHABRIER_REGNARD
             {
                 return true;
             }
-            return false;
+            return false;   
         }
 
-
+        //Check if the movement is possible
         public bool checkMovement(State state, Map map)
         {
-            Position posTemp = new Position(position.getPosX(), position.getPosY()); ;
+            Position posTemp = new Position(position.getPosX(), position.getPosY());
+            //We check the tile corresponding to the new position
             switch (state)
             {
                 case State.Up:

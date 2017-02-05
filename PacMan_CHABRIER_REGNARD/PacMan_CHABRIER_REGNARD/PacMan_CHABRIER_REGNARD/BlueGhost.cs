@@ -7,25 +7,32 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class BlueGhost : Ghost
     {
+        //This is the last ghost of the game
 
-        public BlueGhost() : base()
+        public BlueGhost() : base() //We call base constructor
         {
-            turnToGoOut = 100;
+            turnToGoOut = 100; //He will wait 100 turn before going out
         }
+
+        //Overriding computeTargetTile so that we can have a different target
         protected override void computeTargetTile(PacMan pac, Ghost ghost)
         {
             switch (this.mode)
             {
-                case Mode.Scatter:
+                case Mode.Scatter: //If we are in Scatter mode, we target a fixed point in the corner of the map
                     target = new Position(32, 28);
                     break;
-                case Mode.StayIn:
+                case Mode.StayIn: //We stay in the center 
                     target = new Position(14, 14);
                     break;
-                case Mode.GoOut:
+                case Mode.GoOut: //We target outside the center
                     target = new Position(0, 14);
                     break;
-                case Mode.Normal:
+                case Mode.Normal: //We chase the player
+
+                    //This ghost target two tiles ahead of the pacman, and create a vector from this
+                    //new position and the position of the red ghost, this vector timed by 2 gives 
+                    //The target of the blue ghost.
                     Position tmp = twoAhead(pac.getState(), pac.getPosition());
                     int xg = ghost.getPosition().getPosX();
                     int yg = ghost.getPosition().getPosY();
@@ -36,6 +43,8 @@ namespace PacMan_CHABRIER_REGNARD
             }
         }
 
+
+        //Method to give the position two tiles ahead depending on the direction
         private Position twoAhead(State d, Position p)
         {
             switch (d)

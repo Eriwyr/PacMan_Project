@@ -5,6 +5,7 @@ using System.Text;
 
 namespace PacMan_CHABRIER_REGNARD
 {
+	//Contains every element on the map
     public enum Element
     {
 

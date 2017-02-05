@@ -85,7 +85,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void countBeans()
         {
-            
+            //Will count every beans on the map   
             for(int i = 0; i < VX; i++)
             {
                 for(int j = 0; j < VY; j++)
@@ -101,7 +101,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void removeBean()
         {
-            nbBeans--;
+            nbBeans--; //We decrement when eating a bean
         }
 
          public int getNbBeans()

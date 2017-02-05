@@ -132,6 +132,8 @@ namespace PacMan_CHABRIER_REGNARD
 
         private Texture2D getTexture(int i)
         {
+
+            //Return the corresponding texture for each ghost
             switch(i){
                 case 0:
                    return Content.Load<Texture2D>("redghost");
@@ -158,21 +160,22 @@ namespace PacMan_CHABRIER_REGNARD
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic hereS
+            //We store the user input
             State state = getInput();
 
             if (state == State.Quit)
             {
+                //If an exiting key was pressed
                 this.Exit();
             }
 
-            if (state != State.Nothing)
+            if (state != State.Nothing) //We store in the buffer anything but Nothing state
                 buffer.push(state);
 
             if (gameState == GameState.relaunch)// If we relaunch the game after pacman was dead
             {
                 siren1.Stop();
-                if (timer == 12)//We play animation more slower
+                if (timer == 12)//We slower the animation
                 {
                     timer = 0;
 
@@ -201,7 +204,11 @@ namespace PacMan_CHABRIER_REGNARD
                             break;
                         case 5:
                             changeDead = 0;
+                            
+                            //We reset the game
                             game.reset();
+
+                            //We actualize the texture of the pacman
                             pacMan.setTexture(Content.Load<Texture2D>("pacman"));
                             gameState = GameState.playing;// We launch the game again
                             break;
@@ -210,13 +217,14 @@ namespace PacMan_CHABRIER_REGNARD
             }
             else if (gameState == GameState.playing)// if pacman is not dead
             {
-                if (game.isFinished())
+                if (game.isFinished()) //If the game is finished
                 {
                     gameState = GameState.finished;
-                    return;
+                    return; //We shorten the loop
                 }
                 if (game.getGamePlay() == GamePlay.Hungry)
                 {
+
                     siren1.Stop();
                     invicible1.Play();
                 }
@@ -228,15 +236,19 @@ namespace PacMan_CHABRIER_REGNARD
                 
                     
                     
-                if (timer == 7)
+                if (timer == 7) //This timer allow us to see animations more or less slowly
                 {
+                    //We enter this part every seven loops
 
-                    timer = 0;
+                    timer = 0; //Every seven loops, we reset this timer
 
                     State currentState = game.getPacman().getState();
                     if (currentState != State.Nothing) // To keep in memory the last state 
                         stateDisplay = currentState;
 
+
+
+                    //We display the corresponding direction of the pacman
                     if (stateDisplay == State.Right)
                     {
                         if (change % 2 == 0)
@@ -302,27 +314,36 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         monsterEaten.Play();
                     }
+
+                    //If we have actions in our buffer
                     if (buffer.getCount() > 0)
                     {
-                        if (game.checkPacman(buffer.getHead()))
+                        if (game.checkPacman(buffer.getHead())) //If the first movement is possible
                         {
+                            //We execute this movement and remove it from the buffer
                             game.pacmanMovement(buffer.pop());
+
+                            //We clear the buffer
                             buffer.clear();
 
                         }
-                        else
+                        else //We keep the same direction otherwise
                         {
                             game.pacmanMovement(State.Nothing);
                         }
                     }
-                    else
+                    else //We keep the same direction otherwise
                     {
                         game.pacmanMovement(State.Nothing);
                     }
 
+                    //We make the ghosts move
                     game.computeGhosts();
+
+                    //We check if the ghosts are chased or chasing
                     for (int i = 0;i < ghosts.Length; i++)
                     {
+                        //We display the corresponding image
                         if(game.getGhost(i).getAggressivity() == Aggressivity.defensive)
                         {
                             ghosts[i].setTexture(Content.Load<Texture2D>("affraid0"));
@@ -364,17 +385,20 @@ namespace PacMan_CHABRIER_REGNARD
                 updateViews();
                 base.Update(gameTime);
 
-            } else if (gameState == GameState.finished)
+            } else if (gameState == GameState.finished) //When the game is finished
             {
                 KeyboardState keyboard = Keyboard.GetState();
                 if (keyboard.IsKeyDown(Keys.Space))
                 {
-                    game.restart();
-                    score = 0;
+                    //If the user pressed space
+                    game.restart(); //We reset everything
+                    score = 0; //We also reset the timers
                     timer = 0;
+                    //We reset the pacman texture
                     pacMan.setTexture(Content.Load<Texture2D>("pacman"));
+
                     updateViews();
-                    gameState = GameState.playing;
+                    gameState = GameState.playing; //We set the state to playing
                 }
                    
                 base.Update(gameTime);
@@ -386,6 +410,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public void updateViews()
         {
+            //We display every moving element according to its position in the game
             Position tmpPos = new Position(game.getPacman().getPosition().getPosX(), game.getPacman().getPosition().getPosY());
 
             pacMan.setPosition(new Vector2(tmpPos.getPosY() * 20, tmpPos.getPosX() * 20)); // We must invert x and y position beacause Vector2 has invert position.
@@ -418,6 +443,7 @@ namespace PacMan_CHABRIER_REGNARD
                     {
                         tmppos = new Position(x, y);
 
+                        //We draw the map and its elements
                         if (game.getMap().checkElement(tmppos) == Element.Wall)
                         {
                             int xpos, ypos;
@@ -464,6 +490,7 @@ namespace PacMan_CHABRIER_REGNARD
 
                 }
 
+                //We display the score and the remaining lifes
                 Vector2 fontOrigin = font.MeasureString(game.getPacman().getLife().ToString()) / 2;
                 spriteBatch.DrawString(font, "Life : " + game.getPacman().getLife().ToString(), fontPosLife, Color.Yellow, 0, fontOrigin, 1.0f, SpriteEffects.None, 0.5f); //We print number of life
 
@@ -490,9 +517,11 @@ namespace PacMan_CHABRIER_REGNARD
             } else
             {
 
+                //If the game was ended
                 Vector2 pos = new Vector2(380, 200);
-                if (game.getPacman().won())
+                if (game.getPacman().won()) //We check wether or not the player won
                 {
+                    //We display the corresponding message
                     spriteBatch.DrawString(font, "Well Done !", pos, Color.White);
                 } else
                 {
@@ -502,11 +531,9 @@ namespace PacMan_CHABRIER_REGNARD
 
                 pos.X = 300;
                 pos.Y = 300;
+                //We inform the player to press spacebar if he wants to restart the game
                 spriteBatch.DrawString(font, "Press spacebar to restart", pos, Color.White);
             }
-
-
-            // this being the line that answers your question
 
 
             base.Draw(gameTime);
@@ -515,6 +542,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public State getInput()
         {
+            //Return the state corresponding to the key pressed
             KeyboardState keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.Escape))

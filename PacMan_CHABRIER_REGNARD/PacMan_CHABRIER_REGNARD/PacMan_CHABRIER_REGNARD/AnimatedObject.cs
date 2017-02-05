@@ -9,10 +9,16 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class AnimatedObject
     {
-        private Texture2D texture;
-        private Vector2 position;
-        private Vector2 size;
 
+        // Class for every object displayed
+
+
+        private Texture2D texture; //We store the texture
+        private Vector2 position; //The position to display
+        private Vector2 size; //The size of the image
+
+
+        //Getters and setters
        public Texture2D getTexture()
         {
             return texture;

@@ -10,7 +10,7 @@ namespace PacMan_CHABRIER_REGNARD
         /// </summary>
         static void Main(string[] args)
         {
-            Game1 game = new Game1();
+            Game1 game = new Game1(); //We create our game and we run it
             game.Run();
         }
     }

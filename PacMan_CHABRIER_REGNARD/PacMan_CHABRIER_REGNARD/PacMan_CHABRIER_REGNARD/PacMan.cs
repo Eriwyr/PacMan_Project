@@ -7,6 +7,7 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class PacMan : Character
     {
+        //The pacman is a character with only lifes 
         private int life;
         private bool hasWon = false;
 

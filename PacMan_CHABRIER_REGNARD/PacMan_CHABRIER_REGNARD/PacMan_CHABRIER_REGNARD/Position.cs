@@ -7,7 +7,7 @@ namespace PacMan_CHABRIER_REGNARD
 {
     class Position
     {
-        private int x;
+        private int x; //The coordonates of the point
         private int y;
 
         public Position(int x, int y)
@@ -42,6 +42,8 @@ namespace PacMan_CHABRIER_REGNARD
             this.y = y;
         }
 
+
+        //We create an equals method to compare two positions
         public bool equals(Position pos)
         {
             return (this.x == pos.x && this.y == pos.y);
