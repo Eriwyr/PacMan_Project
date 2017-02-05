@@ -14,7 +14,7 @@ namespace PacMan_CHABRIER_REGNARD
         protected int score;
         public Character()
         {
-            position = new Position(17, 14);
+            position = new Position(23, 13);
             state = State.Wait;
             score = 0;
         }
@@ -168,7 +168,6 @@ namespace PacMan_CHABRIER_REGNARD
 
             if (chase)
             {
-                Console.WriteLine("Returning TRUE");
                 return true;
             }
             return false;
