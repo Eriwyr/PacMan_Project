@@ -370,6 +370,7 @@ namespace PacMan_CHABRIER_REGNARD
                 if (keyboard.IsKeyDown(Keys.Space))
                 {
                     game.restart();
+                    score = 0;
                     timer = 0;
                     pacMan.setTexture(Content.Load<Texture2D>("pacman"));
                     updateViews();
