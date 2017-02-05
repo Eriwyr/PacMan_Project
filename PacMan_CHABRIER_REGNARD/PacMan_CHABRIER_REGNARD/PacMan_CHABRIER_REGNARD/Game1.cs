@@ -102,7 +102,6 @@ namespace PacMan_CHABRIER_REGNARD
             bean = new AnimatedObject(Content.Load<Texture2D>("bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             bigBean = new AnimatedObject(Content.Load<Texture2D>("gros_bean"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             pacMan = new AnimatedObject(Content.Load<Texture2D>("pacman"), new Vector2(0f, 0f), new Vector2(20f, 20f));
-            gameover = new AnimatedObject(Content.Load<Texture2D>("gameover"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[0] = new AnimatedObject(Content.Load<Texture2D>("redghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[1] = new AnimatedObject(Content.Load<Texture2D>("pinkghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
             ghosts[2] = new AnimatedObject(Content.Load<Texture2D>("yellowghost"), new Vector2(0f, 0f), new Vector2(20f, 20f));
