@@ -10,7 +10,7 @@ namespace PacMan_CHABRIER_REGNARD
 
         public PinkGhost() : base()
         {
-            turnToGoOut = 30;
+            turnToGoOut = 50;
         }
         protected override void computeTargetTile(PacMan pac, Ghost ghost)
         {
