@@ -72,5 +72,15 @@ namespace PacMan_CHABRIER_REGNARD
             return new Position(14, 26);
         }
 
+        public int getVX()
+        {
+            return VX;
+        }
+
+        public int getVY()
+        {
+            return VY;
+        }
+
     }
 }
