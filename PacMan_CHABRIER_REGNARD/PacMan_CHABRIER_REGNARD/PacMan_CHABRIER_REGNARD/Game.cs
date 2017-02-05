@@ -134,6 +134,7 @@ namespace PacMan_CHABRIER_REGNARD
                 {
                     ghosts[i].setDefensive();
                     ghosts[i].setHasChanged(true);
+                    vulnerabitlitiesChanging[i] = 0;
                     
                 }
             } 
